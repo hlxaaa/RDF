@@ -1,0 +1,38 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="x-ua-compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
+    <title>直播</title>
+    <script src="Scripts/jquery.min.js"></script>
+    <script src="Scripts/jquery.cookie.js"></script>
+    <script src="Scripts/common.js"></script>
+    <link href="Css/neplayer.min.css" rel="stylesheet" />
+    <script src="Scripts/neplayer.min.js"></script>
+    <!--<script>neplayer.setSWF('video-js.swf')</script>-->
+
+</head>
+<body style="text-align:center;">
+    <video id="my-video" style="margin:auto;" class="video-js" controls poster="https://nos.netease.com/vod163/poster.png" preload="auto" width="640" height="360" data-setup='{}'></video>
+    <script type="text/javascript">
+    var myPlayer = neplayer('my-video');
+
+    $(function () {
+        if (!window.location.search)
+            return;
+        var id = window.location.search.split('=')[1];
+        if (!id)
+            return;
+        $.RdfCommon.post("Sys.VideoInfo", "GetPlayUrl", { Id: id }, function (msg) {
+            if (!msg.Success) {
+                alert(msg.Error);
+                return;
+            }
+            var data = JSON.parse(msg.Result);
+            myPlayer.setDataSource(data);
+            myPlayer.play();
+        });
+    });
+    </script>
+</body>
+</html>

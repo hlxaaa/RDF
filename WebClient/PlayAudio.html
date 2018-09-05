@@ -1,0 +1,361 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>点播音频</title>
+    <link rel="stylesheet" href="Css/user_infor.css" />
+    <link href="Css/paging.css" rel="stylesheet" />
+    <script src="Scripts/jquery.min.js"></script>
+    <script src="Scripts/jquery.cookie.js"></script>
+    <script src="Scripts/paging.js"></script>
+    <script src="Scripts/common.js"></script>
+    <script src="Scripts/es6-promise.min.js"></script>
+    <script src="Scripts/aliyun-oss-sdk.min.js"></script>
+    <script src="Scripts/aliyun-upload-sdk-1.3.0.min.js"></script>
+    <link rel="stylesheet" href="https://g.alicdn.com/de/prismplayer/2.5.0/skins/default/aliplayer-min.css" />
+    <script type="text/javascript" src="https://g.alicdn.com/de/prismplayer/2.5.0/aliplayer-min.js"></script>
+    <script type="text/javascript">
+        var entity = {
+            search: "",
+            pageSize: 9,
+            pageIndex: 1
+        };
+        var uploadAuth = "";
+        var uploadAddress = "";
+        var uploader = new AliyunUpload.Vod({
+            partSize: 409600,
+            //并行上传分片个数，默认5
+            parallel: 1,
+            //网络原因失败时，重新上传次数，默认为3
+            retryCount: 3,
+            //网络原因失败时，重新上传间隔时间，默认为2秒
+            retryDuration: 2,
+            // 开始上传
+            onUploadstarted: function (uploadInfo) {
+                $("#div_jd").show();
+                $("#div_back").width(0);
+                //上传方式1
+                uploader.setUploadAuthAndAddress(uploadInfo, uploadAuth, uploadAddress);
+            },
+            // 文件上传成功
+            onUploadSucceed: function (uploadInfo) {
+                $("#div_back").text("上传完成,正在保存!");
+                SaveEntity.Url = "http://vod.pooboofit.com/" + uploadInfo.object;
+                SaveData();
+            },
+            // 文件上传失败
+            onUploadFailed: function (uploadInfo, code, message) {
+                $(".T_btn a").removeAttr("disabled");
+                alert("上传失败:" + message);
+            },
+            // 文件上传进度
+            onUploadProgress: function (uploadInfo, totalSize, loadedPercent) {
+                $("#div_back").width(Math.ceil(loadedPercent * 100) + "%");
+            },
+            // 上传凭证超时
+            onUploadTokenExpired: function () {
+                uploader.resumeUploadWithAuth(uploadAuth);
+            }
+        });
+        function SaveData() {
+            var text = $(".T_btn a:last-of-type").text();
+            $.RdfCommon.get("Sys.PlayAudio", (text == "更新" ? "Edit" : "Add") + "PlayAudio", SaveEntity, function (rmsg) {
+                if (!rmsg.Success) {
+                    $(".T_btn a").removeAttr("disabled");
+                    alert(rmsg.Error);
+                    return;
+                }
+                var play = JSON.parse(rmsg.Result);
+                LoadPlayAudio();
+                $("#dialog0").slideUp(500);
+                alert(text + "成功!");
+                $(".T_btn a").removeAttr("disabled");
+            });
+        }
+        function Enabled(id, node) {
+            var enabled = $(node).hasClass("disabled");
+            $.RdfCommon.get("Sys.PlayAudio", "EditPlayAudio", { Id: id, Enabled: enabled }, function (msg) {
+                if (!msg.Success) {
+                    alert(msg.Error);
+                    return;
+                }
+                if (enabled) {
+                    $(node).removeClass("disabled").addClass("enabled");
+                } else {
+                    $(node).removeClass("enabled").addClass("disabled");
+                }
+            });
+        }
+        function PlayAudioInfo(id) {
+            $.RdfCommon.get("Sys.PlayAudio", "GetPlayAudioById", { Id: id }, function (msg) {
+                if (!msg.Success) {
+                    alert(msg.Error);
+                    return;
+                }
+                SetValue(JSON.parse(msg.Result));
+                $("#dialog0").slideDown(500);
+            });
+        }
+        function SetValue(play) {
+            $.RdfCommon.clearFileValue("play_url");
+            $(".T_btn a:last-of-type").text(play.Id ? "更新" : "保存");
+            if (play.Id) {
+                $("#file_tr").hide();
+            } else {
+                $("#file_tr").show();
+            }
+            $("#play_id").val(play.Id);
+            $("#play_type").val(play.TypeId);
+            $("#play_title").val(play.Title);
+            $("#play_longtime").val(play.LongTime);
+        }
+        function LoadPlayAudio() {
+            $.RdfCommon.get("Sys.PlayAudio", "LoadPlayAudio", entity, function (msg) {
+                if (!msg.Success) {
+                    alert(msg.Error);
+                    return;
+                }
+                $("#paginddiv").setPageCount(msg.Value);
+                var data = JSON.parse(msg.Result);
+                var tbody = $("#datatable tbody").empty();
+                for (var i = 0; i < data.length; i++) {
+                    tbody.append("<tr>"
+                        + "<td width='20%'>" + data[i].Title + "</td>"
+                        + "<td width='15%'>" + data[i].TypeName + "</td>"
+                        + "<td width='10%'>" + data[i].LongTime + "</td>"
+                        + "<td width='20%'>" + data[i].EditTime + "</td>"
+                        + "<td width='10%'>" + data[i].PlayCount + "</td>"
+                        + "<td width='25%'>"
+                        + "<a onclick='Show(" + data[i].Id + ")'>预览</a>"
+                        + "<a onclick='PlayAudioInfo(" + data[i].Id + ")'>编辑</a>"
+                        + "<span onclick='Enabled(" + data[i].Id + ",this)' class='" + (data[i].Enabled ? "enabled" : "disabled") + "'></span></td>"
+                        + "</tr>");
+                }
+            });
+        }
+        function Show(id) {
+            $.RdfCommon.get("Sys.PlayAudio", "GetPlayAudioById", { Id: id }, function (msg) {
+                if (!msg.Success) {
+                    alert(msg.Error);
+                    return;
+                }
+                var play = JSON.parse(msg.Result);
+                $('#J_prismPlayer').empty();
+                player = new Aliplayer({
+                    id: "J_prismPlayer",
+                    autoplay: false,
+                    isLive: false,
+                    playsinline: true,
+                    width: "100%",
+                    height: "100px",
+                    controlBarVisibility: "always",
+                    useH5Prism: false,
+                    useFlashPrism: false,
+                    source: play.Url,
+                    cover: ""
+                });
+                $("#dialog1").slideDown(500);
+            });
+        }
+        var SaveEntity = null;
+        $(function () {
+            $("#dialog0").hide();
+            $("#dialog1").hide();
+            $("#close_a").click(function () {
+                player.dispose(); //销毁
+                $("#dialog1").hide(500);
+            });
+            $(".T_btn a:first-of-type").click(function () {
+                $("#dialog0").slideUp(500);
+            });
+            $(".T_btn a:last-of-type").click(function () {
+                SaveEntity = {
+                    Id: $("#play_id").val(),
+                    TypeId: $("#play_type").val(),
+                    Title: $("#play_title").val(),
+                    LongTime: $("#play_longtime").val()
+                };
+                if (!SaveEntity.Title) {
+                    alert("标题不能为空!");
+                    return;
+                }
+                if (!SaveEntity.TypeId)
+                    en.TypeId = "0";
+                if (!SaveEntity.LongTime) {
+                    alert("时长不能为空!");
+                    return;
+                }
+                SaveEntity.LongTime = SaveEntity.LongTime.replace(':', '').replace('：', '');
+                if (SaveEntity.LongTime.length>4||isNaN(SaveEntity.LongTime)) {
+                    alert("时长格式错误,格式应为MM:ss,例30:00!");
+                    return;
+                }
+                while (SaveEntity.LongTime.length<4) {
+                    SaveEntity.LongTime = "0" + SaveEntity.LongTime;
+                }
+                var mm = SaveEntity.LongTime.substring(0, 2);
+                var end = SaveEntity.LongTime.substring(2, 4);
+                if (parseInt(end) > 59) {
+                    alert("时长格式错误,秒数不能大于59!");
+                    return;
+                }
+                SaveEntity.LongTime = mm + ":" + end;
+                if ($(this).text() == "更新") {
+                    SaveData();
+                    return;
+                }
+                if (!$("#play_url").val()) {
+                    alert("请选择要上传的视频");
+                    return;
+                }
+                $(".T_btn a").attr("disabled", "disabled");
+                var file = document.getElementById("play_url").files[0];
+                var fixarray = file.name.split(".");
+                var fix = fixarray[fixarray.length - 1];
+                if (fix != "mp3") {
+                    alert("只能上传mp3格式的文件!");
+                    return;
+                }
+                uploader.addFile(file, null, null, null, '{"Vod":{"UserData":{"IsShowWaterMark":"false","Priority":"7"}}}');
+                $.RdfCommon.get("Sys.PlayVideo", "GetAddress", { FileName: file.name,Type:1 }, function (msg) {
+                    if (!msg.Success) {
+                        $(".T_btn a").removeAttr("disabled");
+                        alert(msg.Error);
+                        return;
+                    }
+                    uploadAuth = msg.Value;
+                    uploadAddress = msg.Result;
+                    uploader.startUpload();
+                });
+            });
+            $("#paginddiv").paging({
+                pageCount: 1,
+                selected: function (index) {
+                    entity.pageIndex = index;
+                    LoadPlayAudio();
+                }
+            });
+            LoadPlayAudio();
+            $("#txtsearch").keydown(function (e) {
+                if (e.keyCode == 13) {
+                    entity.search = $(this).val();
+                    LoadPlayAudio();
+                }
+            });
+            $("#btnsearch").click(function () {
+                entity.search = $("#txtsearch").val();
+                LoadPlayAudio();
+            });
+            $("#addCoach").click(function () {
+                SetValue({
+                    Id: "",
+                    Title: "",
+                    TypeId: "1",
+                    TypeName: "",
+                    LongTime: 0,
+                    PlayCount: 0
+                });
+                $("#dialog0").slideDown(500);
+            });
+            $.RdfCommon.get("Sys.AudioType", "GetAll", "", function (msg) {
+                if (!msg.Success) {
+                    alert(msg.Error);
+                    return;
+                }
+                var data = JSON.parse(msg.Result);
+                var type = $("#play_type").empty();
+                if (data.length > 0) {
+                    for (var i = 0; i < data.length; i++) {
+                        type.append("<option value=\"" + data[i].Id + "\">" + data[i].Title + "</option>");
+                    }
+                    type.val(data[0].Id);
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="con_right_infor">
+        <div class="search">
+            <div class="search_left">
+                <span>关键词：</span>
+                <input type="text" id="txtsearch" />
+                <a><img src="Images/search.png" id="btnsearch" /></a>
+            </div>
+            <!--<div class="search_right">
+                <span>类别：</span>
+                <a class="occur">分1</a>
+                <a>分2</a>
+            </div>-->
+            <div class="course_type">
+                <a href="PlayAudio.html" class="type_occur">音频</a>
+                <a href="PlayVideo.html">视频</a>
+                <a href="AudioType.html">专辑管理</a>
+            </div>
+            <span id="addCoach" class="add_coach">上传</span>
+        </div>
+        <div class="con_right_table">
+            <div class="con_table">
+                <table id="datatable">
+                    <thead>
+                        <tr>
+                            <th width="20%">标题</th>
+                            <th width="15%">专辑名称</th>
+                            <th width="10%">时长</th>
+                            <th width="20%">更新时间</th>
+                            <th width="10%">播放次数</th>
+                            <th width="25%">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div id="paginddiv"></div>
+        </div>
+
+        <div id="dialog0" class="T_detail" style="height:500px;width:750px;">
+            <input id="play_id" type="hidden" />
+            <table>
+                <tr>
+                    <td><span>标题</span></td>
+                    <td><input maxlength="20" id="play_title" type="text" value="" /></td>
+                </tr>
+                <tr>
+                    <td><span>专辑</span></td>
+                    <td>
+                        <select id="play_type"></select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span>时长(分钟)</span></td>
+                    <td><input maxlength="5" placeholder="时间格式MM:ss" id="play_longtime" type="text" value="" /></td>
+                </tr>
+                <tr id="file_tr">
+                    <td><span>音频文件</span></td>
+                    <td>
+                        <input type="file" id="play_url" />
+                        <div id="div_jd" style="border:1px solid #999;height:14px;width:100%;border-radius:7px;display:none;">
+                            <div id="div_back" style="background:#08a03e;height:14px;border-radius:7px;width:0%;font-size:12px;">
+                                正在上传，请勿关闭
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr style="height:120px;vertical-align:bottom;">
+                    <td colspan="4">
+                        <div class="T_btn">
+                            <a>关闭</a>
+                            <a>更新</a>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div id="dialog1" class="T_detail" style="height:200px;width:400px;">
+            <div class="prism-player" id="J_prismPlayer" style="height:150px;width:400px"></div>
+            <a id="close_a" style="display:block;width: 193px;height: 50px;line-height: 50px;text-align: center;font-size: 19.6px;letter-spacing: -0.47px;border-radius: 10px;margin: 10px auto 0;cursor: pointer;background-image: linear-gradient(-90deg, #F08343 0%, #FABC56 98%);">关闭</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,57 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    @*<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />*@
+    <script src="~/Scripts/jquery-2.0.0.min.js"></script>
+    @*<style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        p {
+            font-size: 4.4vw;
+            line-height: 10vw;
+        }
+
+        img {
+            /*border-radius: 4vw;*/
+        }
+
+        #div1 {
+            padding-left: 4vw;
+            padding-right: 4vw;
+            padding-top: 4px;
+        }
+    </style>*@
+
+    <title></title>
+</head>
+<body>
+    @*<button onclick="test()">diandian</button>*@
+    @*<a href="http://www.baidu.com">content</a>*@
+    <div id="div1">
+        @Html.Raw(ViewBag.content)
+    </div>
+</body>
+
+</html>
+<script>
+    function GetTs() {
+        return Date.parse(new Date());
+    }
+    $("#div1 img").each(function () {
+        var src = $(this).attr("src")
+        $(this).attr("src", src + "?" + GetTs())
+    })
+</script>

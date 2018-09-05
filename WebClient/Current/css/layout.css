@@ -1,0 +1,159 @@
+﻿input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+    box-shadow: 0 0 0 60px white inset;
+    -webkit-text-fill-color: #878787;
+}
+
+
+.img-avatarHere {
+    display: inline-block !important;
+    /*width: 64px;*/
+    height: 96px;
+    border-radius: 5%;
+}
+
+.nav-main li.open > a {
+    color: #F09B22;
+}
+
+.ft24 {
+    font-size: 24px;
+}
+
+.ft18 {
+    font-size: 18px;
+}
+
+.table-img {
+    height: 45px;
+    width: 80px;
+}
+
+.glyphicon {
+    cursor: pointer;
+}
+
+.sorting_asc:after {
+    content: "\f106";
+    font-family: FontAwesome;
+    float: right;
+}
+
+.nav-main li.open > a.nav-submenu {
+    color: #F09B22;
+}
+
+.nav-main a.active, .nav-main a.active:hover {
+    color: #F09B22;
+}
+
+.nav-main a:hover {
+    color: #F09B22 !important;
+}
+
+.sorting_desc:after {
+    content: "\f107";
+    font-family: FontAwesome;
+    float: right;
+}
+
+.sorting:after {
+    content: "\f0dc";
+    font-family: FontAwesome;
+    color: #ccc;
+    float: right;
+}
+
+table thead th:hover {
+    cursor: pointer;
+}
+
+.pagination li:hover {
+    cursor: pointer;
+}
+
+.fc {
+    clear: both;
+}
+
+.fr {
+    float: right;
+}
+
+.fl {
+    float: left;
+}
+
+/*.table tr td .btn-rounded {
+   margin-top:-12px;
+}*/
+
+
+.sjq-blur {
+    filter: url(10px); /* FireFox, Chrome, Opera */
+    -webkit-filter: blur(10px); /* Chrome, Opera */
+    -moz-filter: blur(10px);
+    -ms-filter: blur(10px);
+    filter: blur(10px);
+    filter: progid:DXImageTransform.Microsoft.Blur(PixelRadius=10, MakeShadow=false); /* IE6~IE9 */
+}
+
+.wangEditor-container .wangEditor-txt {
+    margin-top: 0px !important;
+}
+
+
+.table2 {
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 20px;
+    background-color: transparent;
+    border-spacing: 0;
+    border-collapse: collapse;
+    display: table;
+}
+
+    .table2 thead tr th {
+        padding: 16px 10px 12px;
+        font-family: "Source Sans Pro", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 15px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .table2 tbody tr td {
+        line-height: 1.42857143;
+        vertical-align: top;
+        padding: 12px 10px;
+    }
+
+
+
+.table3 {
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 20px;
+    background-color: transparent;
+    border-spacing: 0;
+    border-collapse: collapse;
+    display: table;
+}
+
+    .table3 thead tr th {
+        padding: 16px 10px 12px;
+        font-family: "Source Sans Pro", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 15px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .table3 tbody tr td {
+        line-height: 1.42857143;
+        vertical-align: top;
+        padding: 12px 10px;
+    }
+
+.myhide {
+    visibility: hidden
+}

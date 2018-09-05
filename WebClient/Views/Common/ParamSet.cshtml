@@ -1,0 +1,194 @@
+﻿<style>
+
+    .table > tbody > tr > td {
+        vertical-align: initial !important;
+    }
+
+    .TitleUrl, .TitleUrl2 {
+        cursor: pointer;
+    }
+
+    .headImg {
+        cursor: pointer;
+    }
+
+    .block-content.block-content-narrow {
+        padding-left: 5%;
+        padding-right: 0%;
+    }
+
+    .myfg .col-xs-4 {
+        line-height: 34px;
+    }
+
+    .tableWapper {
+        overflow-x: auto;
+    }
+
+    .select-pass {
+        width: calc( 100% - 20px ) !important
+    }
+</style>
+
+@{
+    ViewBag.Title = "UserList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var paramSets = new List<DbOpertion.Models.Sys_ParamSet>();
+    paramSets = ViewBag.paramSets;
+
+}
+@section js{
+    <script src="~/Current/js/setting/paramset.js?201809031504"></script>
+}
+@section css{
+    <link rel="stylesheet" href="~/assets/js/plugins/datatables/jquery.dataTables.min.css">
+}
+
+<input class="myhide" type="file" id="input-TitleUrl" onchange="imgChange(event)" accept=".gif,.jpg,.jpeg,.png">
+
+<input class="myhide" type="file" id="input-TitleUrl2" onchange="imgChange2(event)" accept=".gif,.jpg,.jpeg,.png">
+
+<!-- Page Header -->
+<div class="content bg-gray-lighter">
+    <div class="row items-push">
+        <div class="col-sm-7">
+            <h1 class="page-heading">
+                参数设置 @*<small>Tables transformed with dynamic features. Powered by DataTables.</small>*@
+            </h1>
+        </div>
+    </div>
+</div>
+<!-- END Page Header -->
+<!-- Page Content -->
+<div class="content">
+    <!-- Dynamic Table Full -->
+    <div class="block">
+        <div class="block-header">
+            <h3 class="block-title fl">参数列表@*<small>Full</small>*@</h3>
+            <button class="btn btn-default fr addModel" data-toggle="modal" data-target="#modal-popout" type="button">添加参数</button>
+            <div class="fc"></div>
+        </div>
+        <div class="block-content">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="dataTables_length" id="DataTables_Table_0_length">
+
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 tableWapper">
+                    <table class="table table-bordered table-striped js-dataTable-full">
+                        <thead>
+                            <tr>
+                                <th class="" data-sort="key">键</th>
+                                <th class="" data-sort="value">值</th>
+                                <th class="" data-sort="remark">UUID</th>
+                                <th class="" data-sort="uuid">协议类型</th>
+                                <th class="" data-sort="type">备注</th>
+                                <th class="text-center" style="width: 10%;">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+
+                </div>
+                <div class="col-sm-6">
+                    <div class="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate">
+                        @*<ul class="pagination">
+                                <li class="paginate_button disabled">
+                                    <a><i class="fa fa-angle-left"></i></a>
+                                </li>
+                                <li class="paginate_button active"><a>1</a></li>
+                                <li class="paginate_button"><a>2</a></li>
+                                <li class="paginate_button"><a>3</a></li>
+                                <li class="paginate_button"><a>4</a></li>
+                                <li class="paginate_button">
+                                    <a><i class="fa fa-angle-right"></i></a>
+                                </li>
+                            </ul>*@
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END Dynamic Table Full -->
+
+</div>
+<!-- END Page Content -->
+<!-- Pop Out Modal -->
+<div class="modal fade" id="modal-popout" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-popout" style="width:600px;">
+        <div class="modal-content">
+            <div class="block block-themed block-transparent remove-margin-b">
+                <div class="block-header bg-primary-dark">
+                    <ul class="block-options">
+                        <li>
+                            <button data-dismiss="modal" type="button"><i class="si si-close"></i></button>
+                        </li>
+                    </ul>
+                    <h3 class="block-title">参数设置</h3>
+                </div>
+                <div class="block-content">
+                    <div class="block-content block-content-narrow">
+                        <div class="form-horizontal push-10-t" action="base_forms_elements_modern.html" method="post" onsubmit="return false;">
+                            <div class="form-group col-md-12 myfg">
+                                <label class="col-xs-4" for="example-email-input">键</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control key" type="text" name="example-email-input" placeholder="">
+                                </div>
+                            </div>
+                            <div class="form-group col-md-12 myfg">
+                                <label class="col-xs-4" for="example-email-input">值</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control value" type="text" name="example-email-input" placeholder="">
+                                </div>
+                            </div>
+                            <div class="form-group col-md-12 myfg">
+                                <label class="col-xs-4" for="example-email-input">UUID</label>
+                                <div class="col-sm-8">
+                                    @*  <input class="form-control uuid" type="text" name="example-email-input" placeholder="">*@
+                                    <textarea class="form-control uuid" rows="7" placeholder=""></textarea>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-12 myfg">
+                                <label class="col-xs-4" for="example-email-input">协议类型</label>
+                                <div class="col-sm-8">
+                                    <select class="form-control type" name="example-select" size="1">
+                                        <option value="0">一体式电子表</option>
+                                        <option value="1">分离式设备</option>
+                                        <option value="2">控制一体电子表</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-12 myfg">
+                                <label class="col-xs-4" for="example-email-input">备注</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control remark" type="text" name="example-email-input" placeholder="">
+                                </div>
+                            </div>
+
+                            <div class="fc"></div>
+                        </div>
+                        <div class="fc"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                @*<button id="addMN" class="btn btn-info fl" type="button" style="margin-left:72px;">添加阶段</button>*@
+
+                <button class="btn btn-sm btn-default" type="button" data-dismiss="modal">关闭</button>
+                <button class="btn btn-sm btn-primary btn-save" type="button"><i class="fa fa-check"></i> <font id="saveBtn">保存</font></button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END Pop Out Modal -->

@@ -1,0 +1,89 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>后台管理</title>
+    <link rel="stylesheet" href="Css/default.css" />
+    <script src="Scripts/jquery.min.js"></script>
+    <script src="Scripts/common.js"></script>
+    <script src="Scripts/jquery.cookie.js"></script>
+    <script type="text/javascript">
+        //console.log(111)
+        $(function () {
+            if (!$.cookie("userCookie")) {
+                //location.href = "../Login.html";
+                return;
+            }
+            var user = JSON.parse($.cookie("userCookie"));
+            $("#user_UserName").text(user.UserName);
+            var date = new Date();
+            $("#user_Url").attr("src", user.Url + "?ts=" + date.getTime());
+            $("#outlogin").click(function () {
+                $.RdfCommon.loginOut(function (msg) {
+                    if (msg.Success)
+                        location.href = "Login.html";
+                    else
+                        alert(msg.Error);
+                });
+            });
+            function OpenMenu(menu) {
+                if (menu.MenuUrl) {
+                    $("#contentIframeId").attr("src", menu.MenuUrl);
+                }
+            }
+            $.RdfCommon.get("Sys.Menu", "GetUserMenu", "", function (msg) {
+                if (!msg.Success) {
+                    alert(msg.Error);
+                    return;
+                }
+                var data = JSON.parse(msg.Result);
+                console.log(msg)
+                ////-txy get不到，直接push了
+                //data.push({ MenuName: "用户信息管理", MenuUrl: "User.html" });
+                //data.push({ MenuName: "点播训练课程管理", MenuUrl: "PlayAudio.html" });
+                //data.push({ MenuName: "教练直播管理", MenuUrl: "Coach.html" });
+                //data.push({ MenuName: "运动干货管理", MenuUrl: "ueditor\Sport.html?type=0" });
+                //data.push({ MenuName: "奖品管理", MenuUrl: "ueditor\Sport.html?type=1" });
+                //data.push({ MenuName: "数据统计", MenuUrl: "Chart.html" });
+                //data.push({ MenuName: "账号权限管理", MenuUrl: "Account.html" });
+                data.push({ MenuName: "系统设置", MenuUrl: "SysSet.html" });
+                var ul = $("#menuUl").empty();
+                for (var i = 0; i < data.length; i++) {
+                    var li = $("<li><span>" + data[i].MenuName + "</span></li>")
+                        .click(data[i], function (e) {
+                            if (!$(this).hasClass("active")) {
+                                $("#menuUl li[class='active']").removeClass("active");
+                                $(this).addClass("active");
+                                OpenMenu(e.data);
+                            }
+                        })
+                        .appendTo(ul);
+                    if (i == 0) { li.addClass("active"); OpenMenu(data[i]); }
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="box">
+        <div class="head">
+            <div class="logo"><img src="Images/16.png" /></div>
+            <div class="head_right">
+                <a id="user_UserName"></a>
+                <img id="user_Url" style="border-radius:50%;width: 50px;height: 50px;border: 1px solid #666;" src="" />
+                <span id="outlogin" class="esc">退出</span>
+            </div>
+        </div>
+        <div class="content">
+            <div class="con_left">
+                <ul id="menuUl"></ul>
+            </div>
+
+            <div class="con_right">
+                <iframe id="contentIframeId" src="" style="width: 100%;height:100%; padding: 0; margin: 0;"></iframe>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

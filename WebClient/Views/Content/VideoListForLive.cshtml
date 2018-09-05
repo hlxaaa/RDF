@@ -1,0 +1,338 @@
+﻿<style>
+    .table > tbody > tr > td {
+        vertical-align: initial !important;
+    }
+
+    .TitleUrl, .TitleUrl2 {
+        cursor: pointer;
+    }
+
+    .headImg {
+        cursor: pointer;
+    }
+
+    .block-content.block-content-narrow {
+        padding-left: 5%;
+        padding-right: 0%;
+    }
+
+    .myfg .col-xs-4 {
+        line-height: 34px;
+    }
+
+    .tableWapper {
+        overflow-x: auto;
+    }
+
+    .select-pass {
+        width: calc( 100% - 20px ) !important
+    }
+</style>
+
+@{
+    ViewBag.Title = "UserList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var url = "";
+    url = ViewBag.url;
+
+
+
+    var coachs = new List<DbOpertion.Models.Sys_User>();
+    coachs = ViewBag.coachs;
+}
+@section js{
+    <script>
+        var liveId=@ViewBag.liveId
+    </script>
+    <script src="~/Current/js/aliyun/es6-promise.min.js"></script>
+    <script src="~/Current/js/aliyun/aliyun-oss-sdk.min.js"></script>
+    <script src="~/Current/js/aliyun/aliyun-upload-sdk-1.3.0.min.js"></script>
+    <script type="text/javascript" src="https://g.alicdn.com/de/prismplayer/2.5.0/aliplayer-min.js"></script>
+    <script src="~/Current/js/Content/videoListForLive.js?201809031504"></script>
+}
+@section css{
+    <link rel="stylesheet" href="//g.alicdn.com/de/prismplayer/2.7.1/skins/default/aliplayer-min.css" />
+    <link rel="stylesheet" href="~/assets/js/plugins/datatables/jquery.dataTables.min.css">
+}
+
+
+<input class="myhide" type="file" id="input-TitleUrl" onchange="imgChange(event)" accept=".gif,.jpg,.jpeg,.png">
+
+<input class="myhide" type="file" id="input-TitleUrl2" onchange="imgChange2(event)" accept=".gif,.jpg,.jpeg,.png">
+
+<!-- Page Header -->
+<div class="content bg-gray-lighter">
+    <div class="row items-push">
+        <div class="col-sm-7">
+            <h1 class="page-heading">
+                直播选择点播 @*<small>Tables transformed with dynamic features. Powered by DataTables.</small>*@
+            </h1>
+        </div>
+    </div>
+</div>
+<!-- END Page Header -->
+<!-- Page Content -->
+<div class="content">
+    <!-- Dynamic Table Full -->
+    <div class="block">
+        <div class="block-header">
+            <h3 class="block-title fl">视频列表@*<small>Full</small>*@</h3>
+            @*<button class="btn btn-default fr addModel" data-toggle="modal" data-target="#modal-popout" type="button">添加视频</button>*@
+            <div class="fc"></div>
+        </div>
+        <div class="block-content">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="dataTables_length" id="DataTables_Table_0_length">
+                        <label>
+                            <select class="form-control select-size">
+                                <option value="5">5</option>
+                                <option value="10">10</option>
+                                <option value="15">15</option>
+                                <option value="20">20</option>
+                            </select>
+                            <select class="form-control select-username">
+                                <option value="-1">全部</option>
+                                <option value="0">平台</option>
+                                @foreach (var item in coachs)
+                                {
+                                    <option value="@item.Id">@item.UserName</option>
+                                }
+
+                            </select>
+                        </label>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div id="DataTables_Table_0_filter" class="dataTables_filter">
+                        <label>
+                            搜索:<input type="search" class="form-control input-search" style="width:initial">
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 tableWapper">
+                    <table class="table table-bordered table-striped js-dataTable-full">
+                        <thead>
+                            <tr>
+                                <th class="">封面图</th>
+                                <th class="th-sort sorting" data-sort="Title">标题</th>
+                                <th class="th-sort sorting" data-sort="TitleE">英文标题</th>
+                                <th class="th-sort sorting" data-sort="LongTime">时长</th>
+                                <th class="th-sort sorting" data-sort="EditTime">更新时间</th>
+                                <th class="th-sort sorting" data-sort="PlayCount">播放次数</th>
+                                <th class="th-sort sorting" data-sort="price">价格</th>
+                                <th class="th-sort sorting" data-sort="UserName">作者</th>
+                                <th class="text-center" style="width: 10%;">操作</th>
+                                <th class="th-sort sorting" data-sort="Enabled"></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+
+                </div>
+                <div class="col-sm-6">
+                    <div class="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate">
+                        <ul class="pagination">
+                            <li class="paginate_button disabled">
+                                <a><i class="fa fa-angle-left"></i></a>
+                            </li>
+                            <li class="paginate_button active"><a>1</a></li>
+                            <li class="paginate_button"><a>2</a></li>
+                            <li class="paginate_button"><a>3</a></li>
+                            <li class="paginate_button"><a>4</a></li>
+                            <li class="paginate_button">
+                                <a><i class="fa fa-angle-right"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END Dynamic Table Full -->
+
+</div>
+<!-- END Page Content -->
+<!-- Pop Out Modal -->
+<div class="modal fade" id="modal-popout" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-popout" style="width:600px;">
+        <div class="modal-content">
+            <div class="block block-themed block-transparent remove-margin-b">
+                <div class="block-header bg-primary-dark">
+                    <ul class="block-options">
+                        <li>
+                            <button data-dismiss="modal" type="button"><i class="si si-close"></i></button>
+                        </li>
+                    </ul>
+                    <h3 class="block-title">添加视频</h3>
+                </div>
+                <div class="block-content">
+                    <div class="block-content block-content-narrow">
+                        <div class="form-horizontal push-10-t" action="base_forms_elements_modern.html" method="post" onsubmit="return false;">
+                            <div class="form-group col-md-12 myfg">
+                                <label class="col-xs-4" for="example-email-input">封面图</label>
+                                <div class="col-sm-8">
+                                    <img class="img-avatarHere TitleUrl" src="http:\\localhost:8046\\UpLoadFile\AppHeadImage\14.jpg?ts=1532744796918" data-id="5">
+                                </div>
+                            </div>
+                            <div class="form-group col-md-12 myfg">
+                                <label class="col-xs-4" for="example-email-input">标题</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control Title" type="text" name="example-email-input" placeholder="">
+                                </div>
+                            </div>
+                            <div class="form-group col-md-12 myfg">
+                                <label class="col-xs-4" for="example-email-input">英文标题</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control TitleE" type="text" name="example-email-input" placeholder="">
+                                </div>
+                            </div>
+
+                            <div class="form-group col-md-12 myfg">
+                                <label class="col-xs-4" for="example-email-input">时长(分钟)</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control LongTime" type="text" name="example-email-input" placeholder="MM:SS">
+                                </div>
+                            </div>
+
+                            <div class="form-group col-md-12 myfg">
+                                <label class="col-xs-4" for="example-email-input">价格</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control price" type="text" name="example-email-input" placeholder="">
+                                </div>
+                            </div>
+
+                            <div class="form-group col-md-12 myfg">
+                                <label class="col-xs-4" for="example-email-input">视频文件</label>
+                                <div class="col-sm-8">
+                                    <form action="">
+                                        <input type="file" name="file" id="files" multiple />
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-12 myfg progressUp" style="display:none;">
+                                <div class="progress active">
+                                    <div class="progress-bar progress-bar-warning progress-bar-striped" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>
+                                </div>
+                            </div>
+                            <div class="fc"></div>
+                        </div>
+                        <div class="fc"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                @*<button id="addMN" class="btn btn-info fl" type="button" style="margin-left:72px;">添加阶段</button>*@
+
+                <button class="btn btn-sm btn-default" type="button" data-dismiss="modal">关闭</button>
+                <button class="btn btn-sm btn-primary btn-save" type="button"><i class="fa fa-check"></i> <font id="saveBtn">添加</font></button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END Pop Out Modal -->
+<!-- Pop Out Modal -->
+<div class="modal fade" id="modal-edit" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-popout" style="width:600px;">
+        <div class="modal-content">
+            <div class="block block-themed block-transparent remove-margin-b">
+                <div class="block-header bg-primary-dark">
+                    <ul class="block-options">
+                        <li>
+                            <button data-dismiss="modal" type="button"><i class="si si-close"></i></button>
+                        </li>
+                    </ul>
+                    <h3 class="block-title">视频详情</h3>
+                </div>
+                <div class="block-content">
+                    <div class="block-content block-content-narrow">
+                        <div class="form-horizontal push-10-t" action="base_forms_elements_modern.html" method="post" onsubmit="return false;">
+                            <div class="form-group col-md-12 myfg">
+                                <label class="col-xs-4" for="example-email-input">封面图</label>
+                                <div class="col-sm-8">
+                                    <img class="img-avatarHere TitleUrl2" src="http:\\localhost:8046\\UpLoadFile\AppHeadImage\14.jpg?ts=1532744796918" data-id="5">
+                                </div>
+                            </div>
+                            <div class="form-group col-md-12 myfg">
+                                <label class="col-xs-4" for="example-email-input">标题</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control Title2" type="text" name="example-email-input" placeholder="">
+                                </div>
+                            </div>
+                            <div class="form-group col-md-12 myfg">
+                                <label class="col-xs-4" for="example-email-input">英文标题</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control TitleE2" type="text" name="example-email-input" placeholder="">
+                                </div>
+                            </div>
+
+                            <div class="form-group col-md-12 myfg">
+                                <label class="col-xs-4" for="example-email-input">时长(分钟)</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control LongTime2" type="text" name="example-email-input" placeholder="MM:SS">
+                                </div>
+                            </div>
+
+                            <div class="form-group col-md-12 myfg">
+                                <label class="col-xs-4" for="example-email-input">价格</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control price2" type="text" name="example-email-input" placeholder="">
+                                </div>
+                            </div>
+                            <div class="fc"></div>
+                        </div>
+                        <div class="fc"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                @*<button id="addMN" class="btn btn-info fl" type="button" style="margin-left:72px;">添加阶段</button>*@
+
+                <button class="btn btn-sm btn-default" type="button" data-dismiss="modal">关闭</button>
+                <button class="btn btn-sm btn-primary btn-update" type="button"><i class="fa fa-check"></i> <font id="saveBtn">更新</font></button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END Pop Out Modal -->
+
+
+<div class="modal fade" id="modal-play" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-popout" style="width:700px;">
+        <div class="modal-content">
+            <div class="block block-themed block-transparent remove-margin-b">
+                <div class="block-header bg-primary-dark">
+                    <ul class="block-options">
+                        <li>
+                            <button data-dismiss="modal" type="button"><i class="si si-close"></i></button>
+                        </li>
+                    </ul>
+                    <h3 class="block-title">视频预览</h3>
+                </div>
+                <div class="block-content">
+                    <div class="block-content block-content-narrow">
+                        <div class="form-horizontal push-10-t" action="base_forms_elements_modern.html" method="post" onsubmit="return false;">
+
+                            <div id="dialog1" class="T_detail" style="width:600px;">
+                                <div class="prism-player" id="J_prismPlayer" style="height:400px;width:600px"></div>
+                            </div>
+                            <div class="fc"></div>
+                        </div>
+                        <div class="fc"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-sm btn-default" type="button" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>

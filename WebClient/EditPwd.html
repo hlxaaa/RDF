@@ -1,0 +1,117 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>修改密码</title>
+    <script src="Scripts/jquery.min.js"></script>
+    <script src="Scripts/jquery.cookie.js"></script>
+    <script src="Scripts/common.js"></script>
+    <link href="Css/publick.css" rel="stylesheet" />
+    <script type="text/javascript">
+            $(function () {
+                $("#btn_ok").click(function () {
+                    var entity = {
+                        pwd_old: $("#pwd_old").val(),
+                        pwd_new: $("#pwd_new").val(),
+                        pwd_newagain: $("#pwd_newagain").val()
+                    };
+                    if (!entity.pwd_old) {
+                        alert("请输入原密码!");
+                        $("#pwd_old").focus();
+                        return;
+                    }
+                    if (!entity.pwd_new) {
+                        alert("请输入新密码!");
+                        $("#pwd_new").focus();
+                        return;
+                    }
+                    if (!entity.pwd_newagain) {
+                        alert("请再次输入新密码!");
+                        $("#pwd_newagain").focus();
+                        return;
+                    }
+                    if (entity.pwd_old == entity.pwd_new) {
+                        alert("新密码和原密码不能一致!");
+                        $("#pwd_new").focus();
+                        return;
+                    }
+                    if (entity.pwd_new != entity.pwd_newagain) {
+                        alert("两次密码输入不一致!");
+                        $("#pwd_new").focus();
+                        return;
+                    }
+                    $.RdfCommon.post("Sys.User", "UpdatePwd", entity, function (msg) {
+                        if (!msg.Success) {
+                            alert(msg.Error);
+                            return;
+                        }
+                        alert("修改成功!");
+                        window.location.href = "SysSet.html";
+                    });
+                });
+            });
+    </script>
+    <style type="text/css">
+        .password {
+            width: 580px;
+            height: 516px;
+            background: rgba(255,255,255,.8);
+            border: 1px solid #979797;
+            border-radius: 17px;
+            box-sizing: border-box;
+            padding: 30px 20px;
+            float: left;
+            z-index: 10;
+            margin: 70px 0 0 225px;
+        }
+
+        .change {
+        }
+
+            .change ul li {
+                width: 100%;
+                height: 44px;
+                background: #fff;
+                border: 1px solid #979797;
+                border-radius: 6px;
+                text-align: left;
+                margin-top: 18px;
+            }
+
+                .change ul li input {
+                    width: 100%;
+                    height: 44px;
+                    padding: 10px 19px;
+                    box-sizing: border-box;
+                    border-radius: 6px;
+                    font-size: 16px;
+                    color: #999999;
+                    letter-spacing: -0.64px;
+                }
+
+            .change a {
+                width: 263px;
+                height: 49px;
+                background-image: linear-gradient(-90deg, #F08343 0%, #FABC56 98%);
+                border-radius: 10px;
+                text-align: center;
+                line-height: 49px;
+                cursor: pointer;
+                margin: 190px auto 0;
+            }
+    </style>
+</head>
+<body>
+    <div class="password">
+        <div class="change">
+            <ul>
+                <li><input id="pwd_old" type="password" maxlength="16" placeholder="原密码" value="" /></li>
+                <li><input id="pwd_new" type="password" maxlength="16" placeholder="新密码" value="" /></li>
+                <li><input id="pwd_newagain" type="password" maxlength="16" placeholder="再次输入新密码" value="" /></li>
+            </ul>
+            <a id="btn_ok">确认修改</a>
+        </div>
+    </div>
+</body>
+</html>

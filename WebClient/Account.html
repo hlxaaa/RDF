@@ -1,0 +1,294 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>管理员列表</title>
+    <link rel="stylesheet" href="Css/user_infor.css" />
+    <link href="Css/paging.css" rel="stylesheet" />
+    <script src="Scripts/jquery.min.js"></script>
+    <script src="Scripts/jquery.cookie.js"></script>
+    <script src="Scripts/paging.js"></script>
+    <script src="Scripts/common.js"></script>
+    <script type="text/javascript">
+        var entity = {
+            type: 0,
+            search: "",
+            pageSize: 9,
+            pageIndex: 1
+        };
+        function Enabled(id, node) {
+            var enabled = $(node).hasClass("disabled");
+            $.RdfCommon.get("Sys.User", "EditUserInfo", { Id: id, Enabled: enabled }, function (msg) {
+                if (!msg.Success) {
+                    alert(msg.Error);
+                    return;
+                }
+                if (enabled) {
+                    $(node).removeClass("disabled").addClass("enabled");
+                } else {
+                    $(node).removeClass("enabled").addClass("disabled");
+                }
+            });
+        }
+        function UserInfo(id) {
+            $.RdfCommon.get("Sys.User", "GetUserInfoById", { Id: id }, function (msg) {
+                if (!msg.Success) {
+                    alert(msg.Error);
+                    return;
+                }
+                var user = JSON.parse(msg.Result);
+                var age = parseInt(msg.Value);
+                SetValue(user, age);
+                $(".T_detail").slideDown(500);
+            });
+        }
+        function SetValue(user, age, seturl) {
+            $(".T_btn a:last-of-type").text(user.Id ? "更新" : "保存");
+            $("#user_pwd").val(user.UserPwd);
+            if (!seturl) {
+                var date = new Date();
+                $("#user_Url").attr("src", user.Url + "?ts=" + date.getTime());
+            }
+            $("#user_Id").val(user.Id);
+            $("#user_UId").val(user.UId);
+            if (user.UId == "admin") {
+                $("#user_UId").attr("disabled", "disabled");
+            } else {
+                $("#user_UId").removeAttr("disabled");
+            }
+            $("#user_UserName").val(user.UserName);
+            $("#user_Phone").val(user.Phone);
+            if (MenuList) {
+                var td = $("#auth_td").empty();
+                if (user.UId != "admin" && user.Menus != null) {
+                    for (var i = 0; i < MenuList.length; i++) {
+                        if (i % 3 == 0 && i != 0)
+                            td.append("<br/>");
+                        var checked = "";
+                        if (user.Menus.indexOf(MenuList[i].MenuName) != -1)
+                            checked = "checked=\"checked\"";
+                        td.append("<input type=\"checkbox\" " + checked + " id=\"menu_" + MenuList[i].Id + "\"/><label for=\"menu_" + MenuList[i].Id + "\">" + MenuList[i].MenuName + "</label>");
+                    }
+                }
+            }
+        }
+        function LoadUser() {
+            $.RdfCommon.get("Sys.User", "LoadUser", entity, function (msg) {
+                if (!msg.Success) {
+                    alert(msg.Error);
+                    return;
+                }
+                $("#paginddiv").setPageCount(msg.Value);
+                var data = JSON.parse(msg.Result);
+                var tbody = $("#datatable tbody").empty();
+                for (var i = 0; i < data.length; i++) {
+                    tbody.append("<tr>"
+                        + "<td width='10%'>" + data[i].UId + "</td>"
+                        + "<td width='12%'>" + data[i].Phone + "</td>"
+                        + "<td width='10%'>" + data[i].UserName + "</td>"
+                        + "<td width='33%' style='font-size:12px;'>" + data[i].Menus + "</td>"
+                        + "<td width='18%'>"
+                        + "<a onclick='UserInfo(" + data[i].Id + ")'>查看详情</a>"
+                        + "<span onclick='Enabled(" + data[i].Id + ",this)' class='" + (data[i].Enabled ? "enabled" : "disabled") + "'></span></td>"
+                        + "</tr>");
+                }
+            });
+        }
+        var MenuList = null;
+        $(function () {
+            $.RdfCommon.get("Sys.Menu", "GetUserMenu", "", function (msg) {
+                if (!msg.Success) {
+                    alert(msg.Error);
+                    return;
+                }
+                MenuList = JSON.parse(msg.Result);
+            });
+            $(".T_detail").hide();
+            $(".T_btn a:first-of-type").click(function () {
+                $(".T_detail").slideUp(500);
+            });
+            $(".T_btn a:last-of-type").click(function () {
+                var en = {
+                    Id: $("#user_Id").val(),
+                    UId: $("#user_UId").val(),
+                    Type: 0,
+                    UserPwd: $("#user_pwd").val(),
+                    UserName: $("#user_UserName").val(),
+                    Phone: $("#user_Phone").val(),
+                    MenuIds: ""
+                };
+                $("#auth_td input").each(function () {
+                    if ($(this).get(0).checked) {
+                        if (en.MenuIds != "")
+                            en.MenuIds += ",";
+                        en.MenuIds += $(this).attr("id").replace("menu_", "");
+                    }
+                });
+                if (!en.UserPwd) {
+                    alert("密码不能为空!");
+                    $("#user_pwd").focus();
+                    return;
+                }
+                var url = $("#user_Upload").val();
+                var file = null;
+                if (url) {
+                    file = document.getElementById("user_Upload").files[0];
+                    if (file.size > 1024 * 1024 * 2) {
+                        alert("图片大小不能超过2MB!");
+                        return;
+                    }
+                    en.UrlUpLoad = true;
+                }
+                var that = this;
+                var text = $(that).text();
+                $.RdfCommon.get("Sys.User", (text == "更新" ? "Edit" : "Add") + "UserInfo", en, function (rmsg) {
+                    $.RdfCommon.clearFileValue("user_Upload");
+                    if (!rmsg.Success) {
+                        alert(rmsg.Error);
+                        return;
+                    }
+                    var user = JSON.parse(rmsg.Result);
+                    var age = parseInt(rmsg.Value);
+                    SetValue(user, age, true);
+                    LoadUser();
+                    if (url) {
+                        $.RdfCommon.fileUpLoad([{
+                            file: file,
+                            param: { type: "AppHeadImage", id: user.Id },
+                            callback: function (msg, count, size) {
+                                if (msg.Success) {
+                                    if (count == size) {
+                                        $(".T_detail").slideUp(500);
+                                        alert(text + "成功!");
+                                    }
+                                } else {
+                                    alert(msg.Error);
+                                }
+                            }
+                        }]);
+                    } else {
+                        $(".T_detail").slideUp(500);
+                        alert(text + "成功!");
+                    }
+                });
+            });
+            $("#paginddiv").paging({
+                pageCount: 1,
+                selected: function (index) {
+                    entity.pageIndex = index;
+                    LoadUser();
+                }
+            });
+            LoadUser();
+            $("#txtsearch").keydown(function (e) {
+                if (e.keyCode == 13) {
+                    entity.search = $(this).val();
+                    LoadUser();
+                }
+            });
+            $("#btnsearch").click(function () {
+                entity.search = $("#txtsearch").val();
+                LoadUser();
+            });
+            $("#addCoach").click(function () {
+                SetValue({
+                    UId: "",
+                    UserPwd: "",
+                    Url: "Images/default.png",
+                    Id: "",
+                    UserName: "",
+                    Phone: "",
+                    Menus: ""
+                }, 0);
+                $(".T_detail").slideDown(500);
+            });
+            $("#user_Url").click(function () {
+                $.RdfCommon.picturePreview($.RdfCommon.clearFileValue("user_Upload"), { ImgId: "user_Url" });
+                $("#user_Upload").trigger("click");
+            });
+        });
+    </script>
+    <style type="text/css">
+        #auth_td {
+            display: normal;
+        }
+
+            #auth_td input {
+                height: 20px;
+                width: 20px;
+                display: normal;
+            }
+    </style>
+</head>
+<body>
+    <div class="con_right_infor">
+        <div class="search">
+            <div class="search_left">
+                <span>关键词：</span>
+                <input type="text" id="txtsearch" />
+                <a><img src="Images/search.png" id="btnsearch" /></a>
+            </div>
+            <!--<div class="search_right">
+                <span>类别：</span>
+                <a class="occur">分1</a>
+                <a>分2</a>
+            </div>-->
+            <span id="addCoach" class="add_coach">增加管理员</span>
+        </div>
+        <div class="con_right_table">
+            <div class="con_table">
+                <table id="datatable">
+                    <thead>
+                        <tr>
+                            <th width="10%">账号</th>
+                            <th width="12%">手机号</th>
+                            <th width="10%">姓名</th>
+                            <th width="33%">拥有权限</th>
+                            <th width="18%">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div id="paginddiv"></div>
+        </div>
+
+        <div class="T_detail">
+            <input type="file" style="display:none;" id="user_Upload" />
+            <input id="user_Id" type="hidden" />
+            <table>
+                <tr>
+                    <td><span>头像</span></td>
+                    <td><img id="user_Url" title="点击上传图片" class="user_headimg" src="" /></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><span>账号</span></td>
+                    <td><input maxlength="20" id="user_UId" type="text" value="" /></td>
+                    <td><span>密码</span></td>
+                    <td><input maxlength="36" id="user_pwd" type="password" value="" /></td>
+                </tr>
+                <tr>
+                    <td><span>姓名</span></td>
+                    <td><input maxlength="16" id="user_UserName" type="text" value="" /></td>
+                    <td><span>手机号</span></td>
+                    <td><input maxlength="11" id="user_Phone" type="text" value="" /></td>
+                </tr>
+                <tr>
+                    <td colspan="4" id="auth_td"></td>
+                </tr>
+                <tr style="height:120px;vertical-align:bottom;">
+                    <td colspan="4">
+                        <div class="T_btn">
+                            <a>关闭</a>
+                            <a>更新</a>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,100 @@
+﻿@{
+
+    Layout = null;
+
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    @*<script src="jquery-2.0.0.min.js"></script>*@
+    <script src="~/Scripts/jquery-2.0.0.min.js"></script>
+    @*<link href="bootstrap.min.css" rel="stylesheet" />*@
+    <link href="~/Css/bootstrap.min.css" rel="stylesheet" />
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    @*<script src="bootstrap.min.js"></script>*@
+</head>
+<body>
+    <div class="input-group">
+        <span class="input-group-addon">ths</span>
+        <input id="ths" type="text" class="form-control" name="">
+    </div>
+    <div class="input-group">
+        <span class="input-group-addon">tds</span>
+        <input id="tds" type="text" class="form-control" name="">
+    </div>
+    <button id="btn1">生成</button>
+    <textarea name="" id="textarea1" cols="30" rows="10"></textarea>
+
+    <div class="input-group">
+        <span class="input-group-addon">list</span>
+        <input id="list" type="text" class="form-control" name="">
+    </div>
+    <div class="input-group">
+        <span class="input-group-addon">格式</span>
+        <input id="format" type="text" class="form-control" name="">
+    </div>
+    <button id="btn2">生成</button>
+    <textarea name="" id="textarea2" cols="30" rows="10"></textarea>
+
+
+    <script>
+        $(document).ready(function () {
+            $('#btn1').click(function () {
+                get();
+            })
+            $('#btn2').click(function () {
+                get2();
+            })
+        })
+
+        function get2() {
+            var list = new Array();
+            list = getArr($('#list').val())
+            var h = '';
+            $('#textarea2').val(h)
+        }
+
+        function get() {
+            var ths = new Array();
+            ths = getArr($('#ths').val())
+            var tds = new Array();
+            tds = getArr($('#tds').val())
+            var h = '';
+            h += '<table class="table table-bordered table-striped js-dataTable-full"><thead><tr>'
+            for (var i = 0; i < ths.length; i++) {
+                h += '<th class="th-sort sorting" data-sort="' + tds[i] + '">' + ths[i] + '</th>\n'
+            }
+            h += '<th class="text-center" style="width: 10%;">操作</th></tr></thead> \n\n var item=data[i] \n  '
+            for (var i = 0; i < tds.length; i++) {
+                h += 'var ' + tds[i] + ' = item.' + tds[i] + ' ==null?"":item.' + tds[i];
+                h += '\n '
+            }
+            h += 'var id=item.id; \n'
+            h += '\n\n `<tr>'
+
+            for (var i = 0; i < tds.length; i++) {
+                h += '<td class="center tds td-' + tds[i] + '" title="${' + tds[i] + '}">${' + tds[i] + '}</td>\n'
+            }
+            h += `<td class="text-center">
+        <div class="btn-group" data-id=\${id}>
+            <button class="btn btn-xs btn-default" type="button"  title=""><i class="fa fa-pencil"></i></button>
+            <button class="btn btn-xs btn-default" type="button" title=""><i class="fa fa-times"></i></button>
+        </div>
+</td>`
+            h += '</tr>`'
+
+
+            $('#textarea1').val(h)
+        }
+
+        function getArr(str) {
+            return str.split(',')
+        }
+    </script>
+
+</body>
+
+
+</html>

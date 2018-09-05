@@ -1,0 +1,81 @@
+﻿<style>
+    .table > tbody > tr > td {
+        vertical-align: initial !important;
+    }
+
+    .TitleUrl, .TitleUrl2 {
+        cursor: pointer;
+    }
+
+    .headImg {
+        cursor: pointer;
+    }
+
+    .block-content.block-content-narrow {
+        padding-left: 5%;
+        padding-right: 0%;
+    }
+
+    .myfg .col-xs-4 {
+        line-height: 34px;
+    }
+
+    .tableWapper {
+        overflow-x: auto;
+    }
+
+    .select-pass {
+        width: calc( 100% - 20px ) !important
+    }
+</style>
+
+@{
+    ViewBag.Title = "UserList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var url = "";
+    url = ViewBag.url;
+
+    var typeList = new List<DbOpertion.Models.Sys_SportType>();
+    typeList = ViewBag.typeList;
+}
+@section js{
+    <script src="~/Current/js/aliyun/es6-promise.min.js"></script>
+    <script src="~/Current/js/aliyun/aliyun-oss-sdk.min.js"></script>
+    <script src="~/Current/js/aliyun/aliyun-upload-sdk-1.3.0.min.js"></script>
+    <script type="text/javascript" src="https://g.alicdn.com/de/prismplayer/2.5.0/aliplayer-min.js"></script>
+    <script src="~/Current/wangEditor2/js/wangEditor.min.js"></script>
+    <script src="~/Current/js/setting/aboutE.js?201809031504"></script>
+}
+@section css{
+    <link rel="stylesheet" href="//g.alicdn.com/de/prismplayer/2.7.1/skins/default/aliplayer-min.css" />
+    <link rel="stylesheet" href="~/assets/js/plugins/datatables/jquery.dataTables.min.css">
+    <link href="~/Current/wangEditor2/css/wangEditor.css" rel="stylesheet" />
+}
+
+<!-- Page Header -->
+<div class="content bg-gray-lighter">
+    <div class="row items-push">
+        <div class="col-sm-7">
+            <h1 class="page-heading">
+                关于我们 @*<small>Tables transformed with dynamic features. Powered by DataTables.</small>*@
+            </h1>
+        </div>
+    </div>
+</div>
+<!-- END Page Header -->
+<!-- Page Content -->
+<div class="content">
+    <!-- Dynamic Table Full -->
+    <div class="block-header">
+        <button class="btn btn-default fr addModel" data-toggle="modal" type="button">更新</button>
+        <div class="fc"></div>
+    </div>
+    <div class="block">
+        <div class="form-group col-md-12">
+            <div class="row" id="divEditor" style="height:1000px;"></div>
+        </div>
+    </div>
+    <!-- END Dynamic Table Full -->
+</div>
+<!-- END Page Content -->

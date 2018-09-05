@@ -1,0 +1,90 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>意见反馈</title>
+    <link rel="stylesheet" href="Css/user_infor.css" />
+    <link href="Css/paging.css" rel="stylesheet" />
+    <script src="Scripts/jquery.min.js"></script>
+    <script src="Scripts/jquery.cookie.js"></script>
+    <script src="Scripts/paging.js"></script>
+    <script src="Scripts/common.js"></script>
+    <script type="text/javascript">
+        var entity = {
+            search: "",
+            pageSize: 9,
+            pageIndex: 1
+        };
+        function LoadFeedBack() {
+            $.RdfCommon.get("Sys.FeedBack", "LoadFeedBack", entity, function (msg) {
+                if (!msg.Success) {
+                    alert(msg.Error);
+                    return;
+                }
+                $("#paginddiv").setPageCount(msg.Value);
+                var data = JSON.parse(msg.Result);
+                var tbody = $("#datatable tbody").empty();
+                for (var i = 0; i < data.length; i++) {
+                    tbody.append("<tr>"
+                        + "<td width='10%'>" + data[i].Id + "</td>"
+                        + "<td width='15%'>" + data[i].Title + "</td>"
+                        + "<td width='50%'>" + data[i].Content + "</td>"
+                        + "<td width='10%'>" + data[i].UserName+ "</td>"
+                        + "<td width='15%'>" + data[i].EditTime + "</td>"
+                        + "</tr>");
+                }
+            });
+        }
+        $(function () {
+            $("#paginddiv").paging({
+                pageCount: 1,
+                selected: function (index) {
+                    entity.pageIndex = index;
+                    LoadFeedBack();
+                }
+            });
+            LoadFeedBack();
+            $("#txtsearch").keydown(function (e) {
+                if (e.keyCode == 13) {
+                    entity.search = $(this).val();
+                    LoadFeedBack();
+                }
+            });
+            $("#btnsearch").click(function () {
+                entity.search = $("#txtsearch").val();
+                LoadFeedBack();
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="con_right_infor">
+        <div class="search">
+            <div class="search_left">
+                <span>关键词：</span>
+                <input type="text" id="txtsearch" />
+                <a><img src="Images/search.png" id="btnsearch" /></a>
+            </div>
+        </div>
+
+        <div class="con_right_table">
+            <div class="con_table">
+                <table id="datatable">
+                    <thead>
+                        <tr>
+                            <th width="10%">ID</th>
+                            <th width="15%">标题</th>
+                            <th width="50%">内容</th>
+                            <th width="10%">反馈用户</th>
+                            <th width="15%">反馈时间</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div id="paginddiv"></div>
+        </div>
+    </div>
+</body>
+</html>

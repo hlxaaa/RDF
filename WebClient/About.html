@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>关于我们</title>
+    <script src="Scripts/jquery.min.js"></script>
+    <script src="Scripts/jquery.cookie.js"></script>
+    <script src="Scripts/common.js"></script>
+    <script type="text/javascript" charset="utf-8" src="ueditor/ueditor.config.js"></script>
+    <script type="text/javascript" charset="utf-8" src="ueditor/ueditor.all.js"> </script>
+    <script type="text/javascript" charset="utf-8" src="ueditor/lang/zh-cn/zh-cn.js"></script>
+
+    <style type="text/css">
+        .con_right_infor {
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .add_coach {
+            float: right;
+            margin-right: 36px;
+            background-image: linear-gradient(-90deg, #F08343 0%, #FABC56 98%);
+            border-radius: 10px;
+            width: 131px;
+            height: 49px;
+            line-height: 49px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 19.6px;
+            color: #8B572A;
+            letter-spacing: -0.47px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="con_right_infor">
+        <span id="addCoach" class="add_coach">保存</span>
+        <!-- 加载编辑器的容器 -->
+        <script style="height:380px;margin-top:60px;" id="container" name="content" type="text/plain">
+        </script>
+        <!-- 实例化编辑器 -->
+        <script type="text/javascript">
+            var ue = UE.getEditor('container');
+        </script>
+        <script type="text/javascript">
+            $(function () {
+                $("#addCoach").click(function () {
+                    $.RdfCommon.post("Sys.About", "EditAbout", { Content: UE.getEditor('container').getContent() }, function (msg) {
+                        if (!msg.Success) {
+                            alert(msg.Error);
+                            return;
+                        }
+                        alert("保存成功!");
+                    });
+                });
+                setTimeout(function () {
+                    $.RdfCommon.get("Sys.About", "GetAbout", "", function (msg) {
+                        if (!msg.Success) {
+                            alert(msg.Error);
+                            return;
+                        }
+                        UE.getEditor('container').setContent(msg.Result);
+                    });
+                },500);
+            });
+        </script>
+    </div>
+</body>
+</html>

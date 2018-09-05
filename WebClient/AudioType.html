@@ -1,0 +1,250 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>专辑管理</title>
+    <link rel="stylesheet" href="Css/user_infor.css" />
+    <link href="Css/paging.css" rel="stylesheet" />
+    <script src="Scripts/jquery.min.js"></script>
+    <script src="Scripts/jquery.cookie.js"></script>
+    <script src="Scripts/paging.js"></script>
+    <script src="Scripts/common.js"></script>
+    <script type="text/javascript">
+        var entity = {
+            search: "",
+            pageSize: 9,
+            pageIndex: 1
+        };
+        function Enabled(id, node) {
+            var enabled = $(node).hasClass("disabled");
+            $.RdfCommon.get("Sys.AudioType", "EditAudioType", { Id: id, Enabled: enabled }, function (msg) {
+                if (!msg.Success) {
+                    alert(msg.Error);
+                    return;
+                }
+                if (enabled) {
+                    $(node).removeClass("disabled").addClass("enabled");
+                } else {
+                    $(node).removeClass("enabled").addClass("disabled");
+                }
+            });
+        }
+        function AudioTypeInfo(id) {
+            $.RdfCommon.get("Sys.AudioType", "GetAudioTypeById", { Id: id }, function (msg) {
+                if (!msg.Success) {
+                    alert(msg.Error);
+                    return;
+                }
+                SetValue(JSON.parse(msg.Result));
+                $(".T_detail").slideDown(500);
+            });
+        }
+        function SetValue(play) {
+            $("#title_img").attr("src", "");
+            $.RdfCommon.clearFileValue("upload");
+            $(".T_btn a:last-of-type").text(play.Id ? "更新" : "保存");
+            $("#play_id").val(play.Id);
+            var date = new Date();
+            if (play.TitleUrl)
+                play.TitleUrl=play.TitleUrl + "?ts=" + date.getTime();
+            $("#title_img").attr("src", play.TitleUrl);
+            $("#play_title").val(play.Title);
+            $("#play_remark").val(play.Remark);
+        }
+        function LoadAudioType() {
+            $.RdfCommon.get("Sys.AudioType", "LoadAudioType", entity, function (msg) {
+                if (!msg.Success) {
+                    alert(msg.Error);
+                    return;
+                }
+                $("#paginddiv").setPageCount(msg.Value);
+                var data = JSON.parse(msg.Result);
+                var date = new Date();
+                var tbody = $("#datatable tbody").empty();
+                for (var i = 0; i < data.length; i++) {
+                    tbody.append("<tr>"
+                        + "<td width='20%'>" + data[i].Title + "</td>"
+                        + "<td width='20%'><div class='CoverPlan'><img src='" + data[i].TitleUrl + "?ts=" + date.getTime() + "'/></div></td>"
+                        + "<td width='30%'>" + data[i].Remark + "</td>"
+                        + "<td width='30%'>"
+                        + "<a onclick='AudioTypeInfo(" + data[i].Id + ")'>编辑</a>"
+                        + "<span onclick='Enabled(" + data[i].Id + ",this)' class='" + (data[i].Enabled ? "enabled" : "disabled") + "'></span></td>"
+                        + "</tr>");
+                }
+            });
+        }
+        $(function () {
+            $(".T_detail").hide();
+            $(".T_btn a:first-of-type").click(function () {
+                $(".T_detail").slideUp(500);
+            });
+            $(".T_btn a:last-of-type").click(function () {
+                var en = {
+                    Id: $("#play_id").val(),
+                    Title: $("#play_title").val(),
+                    Remark: $("#play_remark").val()
+                };
+                if (!en.Title) {
+                    alert("标题不能为空!");
+                    return;
+                }
+                var url = $("#upload").val();
+                var file = null;
+                if (url) {
+                    file = document.getElementById("upload").files[0];
+                    if (file.size > 1024 * 1024 * 2) {
+                        alert("图片大小不能超过2MB!");
+                        return;
+                    }
+                }
+                var that = this;
+                var text = $(that).text();
+                $(".T_btn a").attr("disabled", "disabled");
+                $.RdfCommon.get("Sys.AudioType", (text == "更新" ? "Edit" : "Add") + "AudioType", en, function (rmsg) {
+                    if (!rmsg.Success) {
+                        alert(rmsg.Error);
+                        $(".T_btn a").removeAttr("disabled");
+                        return;
+                    }
+                    var play = JSON.parse(rmsg.Result);
+                    LoadAudioType();
+                    if (url) {
+                        $.RdfCommon.fileUpLoad([{
+                            file: file,
+                            param: { type: "AudioTypeImage", id: play.Id },
+                            callback: function (msg, count, size) {
+                                if (msg.Success) {
+                                    if (count == size) {
+                                        $(".T_detail").slideUp(500);
+                                        alert(text + "成功!");
+                                        $("#div_jd").hide();
+                                        $(".T_btn a").removeAttr("disabled");
+                                    }
+                                } else {
+                                    alert(msg.Error);
+                                    $("#div_jd").hide();
+                                    $(".T_btn a").removeAttr("disabled");
+                                }
+                            }
+                        }]);
+                    } else {
+                        $(".T_detail").slideUp(500);
+                        alert(text + "成功!");
+                        $(".T_btn a").removeAttr("disabled");
+                    }
+                });
+            });
+            $("#paginddiv").paging({
+                pageCount: 1,
+                selected: function (index) {
+                    entity.pageIndex = index;
+                    LoadAudioType();
+                }
+            });
+            LoadAudioType();
+            $("#txtsearch").keydown(function (e) {
+                if (e.keyCode == 13) {
+                    entity.search = $(this).val();
+                    LoadAudioType();
+                }
+            });
+            $("#btnsearch").click(function () {
+                entity.search = $("#txtsearch").val();
+                LoadAudioType();
+            });
+            $("#addCoach").click(function () {
+                SetValue({
+                    Id: "",
+                    Title: "",
+                    TitleUrl: "",
+                    Remark:""
+                });
+                $(".T_detail").slideDown(500);
+            });
+            $("#title_img").click(function () {
+                $.RdfCommon.picturePreview($.RdfCommon.clearFileValue("upload"), { ImgId: "title_img" });
+                $("#upload").trigger("click");
+            });
+        });
+    </script>
+    <style type="text/css">
+        .CoverPlan {
+            width: 100%;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+        }
+
+            .CoverPlan img {
+                width: 80px;
+                height: 45px;
+            }
+    </style>
+</head>
+<body>
+    <div class="con_right_infor">
+        <div class="search">
+            <div class="search_left">
+                <span>关键词：</span>
+                <input type="text" id="txtsearch" />
+                <a><img src="Images/search.png" id="btnsearch" /></a>
+            </div>
+            <!--<div class="search_right">
+                <span>类别：</span>
+                <a class="occur">分1</a>
+                <a>分2</a>
+            </div>-->
+            <div class="course_type">
+                <a href="PlayAudio.html">音频</a>
+                <a href="PlayVideo.html">视频</a>
+                <a href="AudioType.html" class="type_occur">专辑管理</a>
+            </div>
+            <span id="addCoach" class="add_coach">添加</span>
+        </div>
+        <div class="con_right_table">
+            <div class="con_table">
+                <table id="datatable">
+                    <thead>
+                        <tr>
+                            <th width="20%">标题</th>
+                            <th width="20%">封面图</th>
+                            <th width="30%">描述</th>
+                            <th width="30%">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div id="paginddiv"></div>
+        </div>
+
+        <div class="T_detail" style="height:500px;width:700px;">
+            <input id="play_id" type="hidden" />
+            <input type="file" style="display:none;" id="upload" />
+            <table>
+                <tr>
+                    <td><span>封面图</span></td>
+                    <td><img id="title_img" title="点击上传图片" style="height:150px;width:250px;border:1px solid #ccc;cursor:pointer; border-radius:5px;" src="" /></td>
+                </tr>
+                <tr>
+                    <td><span>标题</span></td>
+                    <td><input maxlength="20" id="play_title" type="text" value="" /></td>
+                </tr>
+                <tr>
+                    <td><span>描述</span></td>
+                    <td><input maxlength="100" id="play_remark" type="text" value="" /></td>
+                </tr>
+                <tr style="height:100px;vertical-align:bottom;">
+                    <td colspan="4">
+                        <div class="T_btn">
+                            <a>关闭</a>
+                            <a>更新</a>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

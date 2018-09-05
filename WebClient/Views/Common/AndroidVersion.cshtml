@@ -1,0 +1,250 @@
+﻿<style>
+
+    .table > tbody > tr > td {
+        vertical-align: initial !important;
+    }
+
+    .TitleUrl, .TitleUrl2 {
+        cursor: pointer;
+    }
+
+    .headImg {
+        cursor: pointer;
+    }
+
+    .block-content.block-content-narrow {
+        padding-left: 5%;
+        padding-right: 0%;
+    }
+
+    .myfg .col-xs-4 {
+        line-height: 34px;
+    }
+
+    .tableWapper {
+        overflow-x: auto;
+    }
+
+    .select-pass {
+        width: calc( 100% - 20px ) !important
+    }
+</style>
+
+@{
+    ViewBag.Title = "UserList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var url = "";
+    url = ViewBag.url;
+
+
+}
+@section js{
+    <script src="~/Current/js/jquery-form.js"></script>
+    <script src="~/Current/js/setting/androidVersion.js?201809031504"></script>
+}
+@section css{
+    <link rel="stylesheet" href="~/assets/js/plugins/datatables/jquery.dataTables.min.css">
+}
+
+<!-- Page Header -->
+<div class="content bg-gray-lighter">
+    <div class="row items-push">
+        <div class="col-sm-7">
+            <h1 class="page-heading">
+                干货留言管理
+            </h1>
+        </div>
+    </div>
+</div>
+<!-- END Page Header -->
+<!-- Page Content -->
+<div class="content">
+    <!-- Dynamic Table Full -->
+    <div class="block">
+        <div class="block-header">
+            <h3 class="block-title fl">留言列表@*<small>Full</small>*@</h3>
+            <button class="btn btn-default fr addModel" data-toggle="modal" data-target="#modal-popout" type="button">添加新版本</button>
+            <div class="fc"></div>
+        </div>
+        <div class="block-content">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="dataTables_length" id="DataTables_Table_0_length">
+                        <label>
+                            <select class="form-control select-size">
+                                <option value="5">5</option>
+                                <option value="10">10</option>
+                                <option value="15">15</option>
+                                <option value="20">20</option>
+                            </select>
+                            @*<select class="form-control select-isEnglish">
+                                    <option value="2">全部模式</option>
+                                    <option value="0">中文</option>
+                                    <option value="1">英文</option>
+                                </select>*@
+                        </label>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div id="DataTables_Table_0_filter" class="dataTables_filter">
+                        <label>
+                            搜索:<input type="search" class="form-control input-search" style="width:initial">
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 tableWapper">
+                    <table class="table table-bordered table-striped js-dataTable-full">
+                        <thead>
+                            <tr>
+                                <th class="th-sort sorting" data-sort="versionName">版本名称</th>
+                                <th class="th-sort sorting" data-sort="versionCode">版本号</th>
+                                <th class="th-sort sorting" data-sort="updateLog">更新日志</th>
+                                <th class="th-sort sorting" data-sort="targetSize">大小</th>
+                                <th class="th-sort sorting" data-sort="editTime">编辑时间</th>
+                                <th class="text-center" style="width: 10%;">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+
+                </div>
+                <div class="col-sm-6">
+                    <div class="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate">
+                        <ul class="pagination">
+                            <li class="paginate_button disabled">
+                                <a><i class="fa fa-angle-left"></i></a>
+                            </li>
+                            <li class="paginate_button active"><a>1</a></li>
+                            <li class="paginate_button"><a>2</a></li>
+                            <li class="paginate_button"><a>3</a></li>
+                            <li class="paginate_button"><a>4</a></li>
+                            <li class="paginate_button">
+                                <a><i class="fa fa-angle-right"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END Dynamic Table Full -->
+
+</div>
+<!-- END Page Content -->
+<!-- Pop Out Modal -->
+<div class="modal fade" id="modal-popout" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-popout" style="width:600px;">
+        <div class="modal-content">
+            <div class="block block-themed block-transparent remove-margin-b">
+                <div class="block-header bg-primary-dark">
+                    <ul class="block-options">
+                        <li>
+                            <button data-dismiss="modal" type="button"><i class="si si-close"></i></button>
+                        </li>
+                    </ul>
+                    <h3 class="block-title">添加版本</h3>
+                </div>
+                <div class="block-content">
+                    <div class="block-content block-content-narrow">
+                        <form class="form-horizontal push-10-t" id="myForm" action="../settingAjax/AddNewVersion" method="post" onsubmit="return Test()">
+                            <div class="form-group col-md-12 myfg">
+                                <label class="col-xs-4" for="example-email-input">版本名称</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control versionName" type="text" name="versionName" placeholder="">
+                                </div>
+                            </div>
+                            <div class="form-group col-md-12 myfg">
+                                <label class="col-xs-4" for="example-email-input">版本号</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control versionCode" type="text" name="versionCode" placeholder="">
+                                </div>
+                            </div>
+                            <div class="form-group col-md-12 myfg">
+                                <label class="col-xs-4" for="example-email-input">更新日志</label>
+                                <div class="col-sm-8">
+                                    <textarea class="form-control updateLog" id="contact1-msg" name="updateLog" rows="7" placeholder=""></textarea>
+                                </div>
+                            </div>
+
+                            <div class="form-group col-md-12 myfg">
+                                <label class="col-xs-4" for="example-email-input">apk文件</label>
+                                <div class="col-sm-8">
+                                    <input type="file" name="file" id="files">
+                                </div>
+                            </div>
+
+                            <div class="fc"></div>
+                        </form>
+                        <div class="fc"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                @*<button id="addMN" class="btn btn-info fl" type="button" style="margin-left:72px;">添加阶段</button>*@
+
+                <button class="btn btn-sm btn-default" type="button" data-dismiss="modal">关闭</button>
+                <button class="btn btn-sm btn-primary btn-save" type="button"><i class="fa fa-check"></i> <font id="saveBtn">保存</font></button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END Pop Out Modal -->
+<!-- Pop Out Modal -->
+<div class="modal fade" id="modal-edit" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-popout" style="width:600px;">
+        <div class="modal-content">
+            <div class="block block-themed block-transparent remove-margin-b">
+                <div class="block-header bg-primary-dark">
+                    <ul class="block-options">
+                        <li>
+                            <button data-dismiss="modal" type="button"><i class="si si-close"></i></button>
+                        </li>
+                    </ul>
+                    <h3 class="block-title">更新版本</h3>
+                </div>
+                <div class="block-content">
+                    <div class="block-content block-content-narrow">
+                        <div class="form-horizontal push-10-t" action="base_forms_elements_modern.html" method="post" onsubmit="return false;">
+
+                            <div class="form-group col-md-12 myfg">
+                                <label class="col-xs-4" for="example-email-input">版本名称</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control versionName2" type="text" name="versionName" placeholder="">
+                                </div>
+                            </div>
+                            <div class="form-group col-md-12 myfg">
+                                <label class="col-xs-4" for="example-email-input">版本号</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control versionCode2" type="text" name="versionCode" placeholder="">
+                                </div>
+                            </div>
+                            <div class="form-group col-md-12 myfg">
+                                <label class="col-xs-4" for="example-email-input">更新日志</label>
+                                <div class="col-sm-8">
+                                    <textarea class="form-control updateLog2" id="contact1-msg" name="updateLog" rows="7" placeholder=""></textarea>
+                                </div>
+                            </div>
+                            <div class="fc"></div>
+                        </div>
+                        <div class="fc"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                @*<button id="addMN" class="btn btn-info fl" type="button" style="margin-left:72px;">添加阶段</button>*@
+
+                <button class="btn btn-sm btn-default" type="button" data-dismiss="modal">关闭</button>
+                <button class="btn btn-sm btn-primary btn-update" type="button"><i class="fa fa-check"></i> <font id="saveBtn">更新</font></button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END Pop Out Modal -->

@@ -1,0 +1,132 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>数据统计</title>
+    <link rel="stylesheet" href="Css/user_infor.css" />
+    <link href="Css/paging.css" rel="stylesheet" />
+    <link rel="stylesheet" href="Css/jquery.datetimepicker.css" />
+    <script src="Scripts/jquery.min.js"></script>
+    <script src="Scripts/jquery.cookie.js"></script>
+    <script src="Scripts/paging.js"></script>
+    <script src="Scripts/common.js"></script>
+    <script src="Scripts/jquery.datetimepicker.full.js"></script>
+    <script src="Scripts/echarts.min.js"></script>
+    <script type="text/javascript">
+        var entity = {
+            type: "KM",
+            userId: 0,
+            userName:"",
+            date: $.RdfCommon.dateFormatter($.RdfCommon.getNowDate(),"yyyy-MM-dd")
+        };
+        function SelectUser(id,name) {
+            entity.userId = parseInt(id);
+            entity.userName = name;
+            $("#username").val(name);
+            Load();
+        }
+        function Load() {
+            $.RdfCommon.post("Sys.Data", "GetUserData", entity, function (msg) {
+                if (!msg.Success) {
+                    alert(msg.Error);
+                    return;
+                }
+                var list = JSON.parse(msg.Result);
+                var x_name = [];
+                var x_data = [];
+                for (var i = 0; i < list.length; i++) {
+                    x_name.push($.RdfCommon.dateFormatter(list[i].CreateTime, "HH"));
+                    if (entity.type == "KM") {
+                        x_data.push(list[i].KM);
+                    } else if (entity.type == "CAL") {
+                        x_data.push(list[i].KAL);
+                    } else if (entity.type == "总KM") {
+                        x_data.push(list[i].TotalKM);
+                    }
+                }
+
+                var myChart = echarts.init(document.getElementById("content"));
+                myChart.setOption({
+                    title: {
+                        text: entity.type,
+                        left: 'center',
+                        textStyle: { fontSize: 20 },
+                        subtextStyle: {
+                            color: '#000'
+                        }
+                    },
+                    xAxis: {
+                        type: 'category',
+                        data: x_name,
+                        axisTick: {
+                            alignWithLabel: true
+                        }
+                    },
+                    yAxis: {
+                        name: entity.userName,
+                        nameTextStyle: { fontSize: 18, fontWeight: 'bold' },
+                        type: 'value'
+                    },
+                    series: [{
+                        label: {
+                            normal: {
+                                show: true,
+                                position: 'top'
+                            }
+                        },
+                        data: x_data,
+                        type: 'line'
+                    }]
+                });
+            });
+        }
+        $(function () {
+            $("#date").val(entity.date);
+            if (window.location.search) {
+                var data = $.RdfCommon.searchData();
+                SelectUser(data.id, data.name);
+            }
+         
+            $(".search_right a").click(function () {
+                $(".occur").removeClass("occur");
+                $(this).addClass("occur");
+                entity.type = $(this).text();
+                Load();
+            });
+            $('#date').datetimepicker({
+                lang: "ch",
+                format: "Y-m-d",      //格式化日期
+                timepicker: false,    //关闭时间选项
+                todayButton: false,
+                onSelectDate: function (e,a,b) {
+                    entity.date = $("#date").val();
+                    Load();
+                }
+            });
+            $("#username").click(function () {
+                window.open("User.html");
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="con_right_infor">
+        <div class="search" style="line-height:100px;padding-left:20px;font-size:18px;">
+            <div class="search_right">
+                <span>类别：</span>
+                <a class="occur">KM</a>
+                <a>CAL</a>
+                <a>总KM</a>
+            </div>
+            <span>日期：</span>
+            <input maxlength="10" id="date" type="text" value="" style="height:30px;border-radius:5px;width:140px;border:1px solid #ccc;" />
+            <span>用户：</span>
+            <input id="username" type="text" value="" style="height:30px;border-radius:5px;width:140px;border:1px solid #ccc;" />
+        </div>
+        <div class="con_right_table">
+            <div id="content" style="height:100%;height:100%;"></div>
+        </div>
+    </div>
+</body>
+</html>

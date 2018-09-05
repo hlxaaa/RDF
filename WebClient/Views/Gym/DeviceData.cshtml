@@ -1,0 +1,207 @@
+﻿<style>
+    /*.table > tbody > tr > td {
+        vertical-align: initial !important;
+    }*/
+
+    .table > tbody > tr > td {
+        vertical-align: initial !important;
+    }
+
+    .TitleUrl, .TitleUrl2 {
+        cursor: pointer;
+    }
+
+    .headImg {
+        cursor: pointer;
+    }
+
+    .block-content.block-content-narrow {
+        padding-left: 5%;
+        padding-right: 0%;
+    }
+
+    .myfg .col-xs-4 {
+        line-height: 34px;
+    }
+
+    .tableWapper {
+        overflow-x: auto;
+    }
+
+    .select-pass {
+        width: calc( 100% - 20px ) !important
+    }
+</style>
+
+@{
+    ViewBag.Title = "UserList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var url = "";
+    url = ViewBag.url;
+
+    var gymList = new List<DbOpertion.Models.Gym>();
+    gymList = ViewBag.gymList;
+    var gymId = "0";
+    gymId = ViewBag.gymId;
+
+}
+@section js{
+    <script>
+        @*var GymId=@gymId*@
+    </script>
+
+    <script src="~/Current/js/aliyun/es6-promise.min.js"></script>
+    <script src="~/Current/js/aliyun/aliyun-oss-sdk.min.js"></script>
+    <script src="~/Current/js/aliyun/aliyun-upload-sdk-1.3.0.min.js"></script>
+    <script type="text/javascript" src="https://g.alicdn.com/de/prismplayer/2.5.0/aliplayer-min.js"></script>
+    <script src="~/Current/js/gym/deviceData.js?201809031504"></script>
+}
+@section css{
+    <link rel="stylesheet" href="//g.alicdn.com/de/prismplayer/2.7.1/skins/default/aliplayer-min.css" />
+    <link rel="stylesheet" href="~/assets/js/plugins/datatables/jquery.dataTables.min.css">
+}
+
+<!-- Page Header -->
+<div class="content bg-gray-lighter">
+    <div class="row items-push">
+        <div class="col-sm-7">
+            <h1 class="page-heading">
+                设备管理 @*<small>Tables transformed with dynamic features. Powered by DataTables.</small>*@
+            </h1>
+        </div>
+    </div>
+</div>
+<!-- END Page Header -->
+<!-- Page Content -->
+<div class="content">
+    <!-- Dynamic Table Full -->
+    <div class="block">
+        <div class="block-header">
+            <h3 class="block-title fl">设备列表@*<small>Full</small>*@</h3>
+            @*<button class="btn btn-default fr addModel" data-toggle="modal" data-target="#modal-popout" type="button">添加设备</button>*@
+            <div class="fc"></div>
+        </div>
+        <div class="block-content">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="dataTables_length" id="DataTables_Table_0_length">
+                        <label>
+                            <select class="form-control select-size">
+                                <option value="5">5</option>
+                                <option value="10">10</option>
+                                <option value="15">15</option>
+                                <option value="20">20</option>
+                            </select>
+                            <select class="form-control select-gymId">
+                                <option value="0">全部健身房</option>
+                                @foreach (var item in gymList)
+                                {
+                                    <option value="@item.id">@item.name</option>
+                                }
+                            </select>
+                        </label>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div id="DataTables_Table_0_filter" class="dataTables_filter">
+                        <label>
+                            搜索:<input type="search" class="form-control input-search" style="width:initial">
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 tableWapper">
+                    <table class="table table-bordered table-striped js-dataTable-full">
+                        <thead>
+                            <tr>
+                                <th class="" data-sort="orderNo">排名</th>
+                                <th class="" data-sort="Url">头像</th>
+                                <th class="" data-sort="UserName">用户名</th>
+                                <th class="" data-sort="CreateTime">上传时间</th>
+                                <th class="th-sort sorting" data-sort="XL">心率</th>
+                                <th class="th-sort sorting" data-sort="SD">速度</th>
+                                <th class="th-sort sorting" data-sort="KAL">卡路里</th>
+                                <th class="th-sort sorting" data-sort="KM">里程</th>
+                                <th class="th-sort sorting" data-sort="DRAG">阻力</th>
+                                <th class="th-sort sorting" data-sort="WATT">瓦特</th>
+                                <th class="th-sort sorting" data-sort="TotalTime">运动时长</th>
+                                @*<th class="text-center" style="width: 10%;">操作</th>*@
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+
+                </div>
+                <div class="col-sm-6">
+                    <div class="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate">
+                        <ul class="pagination">
+                            <li class="paginate_button disabled">
+                                <a><i class="fa fa-angle-left"></i></a>
+                            </li>
+                            <li class="paginate_button active"><a>1</a></li>
+                            <li class="paginate_button"><a>2</a></li>
+                            <li class="paginate_button"><a>3</a></li>
+                            <li class="paginate_button"><a>4</a></li>
+                            <li class="paginate_button">
+                                <a><i class="fa fa-angle-right"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END Dynamic Table Full -->
+
+</div>
+<!-- END Page Content -->
+<!-- Pop Out Modal -->
+<div class="modal fade" id="modal-popout" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-popout" style="width:600px;">
+        <div class="modal-content">
+            <div class="block block-themed block-transparent remove-margin-b">
+                <div class="block-header bg-primary-dark">
+                    <ul class="block-options">
+                        <li>
+                            <button data-dismiss="modal" type="button"><i class="si si-close"></i></button>
+                        </li>
+                    </ul>
+                    <h3 class="block-title">添加设备</h3>
+                </div>
+                <div class="block-content">
+                    <div class="block-content block-content-narrow">
+                        <div class="form-horizontal push-10-t" action="base_forms_elements_modern.html" method="post" onsubmit="return false;">
+                            <div class="form-group col-md-12 myfg">
+                                <label class="col-xs-4" for="example-email-input">名称</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control name" type="text" name="example-email-input" placeholder="">
+                                </div>
+                            </div>
+                            @*<div class="form-group col-md-12 myfg">
+                                    <label class="col-xs-4" for="example-email-input">英文名称</label>
+                                    <div class="col-sm-8">
+                                        <input class="form-control nameE" type="text" name="example-email-input" placeholder="">
+                                    </div>
+                                </div>*@
+                            <div class="fc"></div>
+                        </div>
+                        <div class="fc"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                @*<button id="addMN" class="btn btn-info fl" type="button" style="margin-left:72px;">添加阶段</button>*@
+                <button class="btn btn-sm btn-default" type="button" data-dismiss="modal">关闭</button>
+                <button class="btn btn-sm btn-primary btn-save" type="button"><i class="fa fa-check"></i> <font id="saveBtn">保存</font></button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END Pop Out Modal -->

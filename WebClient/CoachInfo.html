@@ -1,0 +1,496 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>教练信息</title>
+    <link rel="stylesheet" href="Css/paging.css" />
+    <link rel="stylesheet" href="Css/coach.css" />
+    <link rel="stylesheet" href="Css/jquery.datetimepicker.css" />
+    <script src="Scripts/jquery.min.js"></script>
+    <script src="Scripts/jquery.cookie.js"></script>
+    <script src="Scripts/paging.js"></script>
+    <script src="Scripts/common.js"></script>
+    <script src="Scripts/jquery.datetimepicker.full.js"></script>
+    <script type="text/javascript">
+        function OpenVideo(id) {
+            window.open("Video.html?Id=" + id);
+        }
+        $(function () {
+            var entity = {
+                pageSize: 3,
+                pageIndex: 1
+            };
+            if (window.location.search) {
+                entity.userId = window.location.search.split('=')[1];
+            } else {
+                var user = JSON.parse($.cookie("userCookie"));
+                entity.userId = user.Id;
+            }
+            $("#dialog0").hide();
+            $("#dialog1").hide();
+            $(".coach_infor_top .set").click(function () {
+                $("#dialog0").show("slow");
+            });
+            $(".T_btn a:first-of-type").click(function () {
+                $("#dialog0").hide("slow");
+                $("#dialog1").hide("slow");
+            });
+            $("#user_Url").click(function () {
+                $.RdfCommon.picturePreview($.RdfCommon.clearFileValue("user_Upload"), { ImgId: "user_Url" });
+                $("#user_Upload").trigger("click");
+            });
+            $("#btn_div0 a:last-of-type").click(function () {
+                var en = {
+                    UrlAddress: "",
+                    Id: $("#user_Id").val(),
+                    UId: $("#user_UId").val(),
+                    UserPwd: $("#user_pwd").val(),
+                    Sex: $("#sex_man").get(0).checked,
+                    UserName: $("#user_UserName").val(),
+                    Height: $("#user_Height").val(),
+                    Weight: $("#user_Weight").val(),
+                    Phone: $("#user_Phone").val(),
+                    Birthday: $("#user_Birthday").val()
+                };
+                var url = $("#user_Upload").val();
+                var file = null;
+                if (url) {
+                    file = document.getElementById("user_Upload").files[0];
+                    if (file.size > 1024 * 1024 * 2) {
+                        alert("图片大小不能超过2MB!");
+                        return;
+                    }
+                    en.UrlUpLoad = true;
+                }
+                $.RdfCommon.get("Sys.User", "EditUserInfo", en, function (rmsg) {
+                    if (!rmsg.Success) {
+                        alert(rmsg.Error);
+                        return;
+                    }
+                    var user = JSON.parse(rmsg.Result);
+                    var age = parseInt(rmsg.Value);
+                    var url = $("#user_Upload").val();
+                    if (url) {
+                        $.RdfCommon.fileUpLoad([{
+                            file: file,
+                            param: { type: "AppHeadImage", id: user.Id },
+                            callback: function (msg, count, size) {
+                                if (msg.Success) {
+                                    if (count == size) {
+                                        SetValue(user, age);
+                                        $("#dialog0").hide("slow");
+                                        $("#dialog1").hide("slow");
+                                        alert("更新成功!");
+                                    }
+                                } else {
+                                    alert(msg.Error);
+                                }
+                            }
+                        }]);
+                    } else {
+                        SetValue(user, age);
+                        $("#dialog0").hide("slow");
+                        $("#dialog1").hide("slow");
+                        alert("更新成功!");
+                    }
+                });
+            });
+
+            var logic = function (currentDateTime) {
+                if (currentDateTime && currentDateTime.getDay() == 6) {
+                    this.setOptions({
+                        minTime: '11:00'
+                    });
+                } else
+                    this.setOptions({
+                        minTime: '8:00'
+                    });
+            };
+
+            var dateToDisable = new Date();
+            dateToDisable.setDate(dateToDisable.getDate() + 2);
+            $('#datetimepicker11').datetimepicker({
+                beforeShowDay: function (date) {
+                    if (date.getMonth() == dateToDisable.getMonth() && date.getDate() == dateToDisable.getDate()) {
+                        return [false, ""]
+                    }
+
+                    return [true, ""];
+                }
+            });
+            $('#user_Birthday').datetimepicker({
+                lang: "ch",
+                format: "Y-m-d",      //格式化日期
+                timepicker: false,    //关闭时间选项
+                //yearStart:2000,     //设置最小年份
+                //yearEnd:2050,        //设置最大年份
+                todayButton: false    //关闭选择今天按钮
+            });
+            function SetValue(user, age) {
+                if (user.Sex) {
+                    $("#seximage").attr("src", "Images/17.png");
+                    $("#user1_Sex").text("男");
+                    $("#sex_man").get(0).checked = true;
+                    $("#sex_woman").get(0).checked = false;
+                } else {
+                    $("#seximage").attr("src", "Images/18.png");
+                    $("#user1_Sex").text("女");
+                    $("#sex_man").get(0).checked = false;
+                    $("#sex_woman").get(0).checked = true;
+                }
+                $("#user1_Age").text(age);
+                var date = new Date();
+                $("#user1_Url").attr("src", user.Url + "?ts=" + date.getTime());
+                $("#user_Url").attr("src", user.Url + "?ts=" + date.getTime());
+                $("#user1_Id").text(user.Id);
+                $("#user_Id").val(user.Id);
+                $("#user1_UId").text(user.UId);
+                $("#user_UId").val(user.UId);
+                $("#user1_UserName").text(user.UserName);
+                $("#user_UserName").val(user.UserName);
+                $("#user1_Height").text(user.Height);
+                $("#user_Height").val(user.Height);
+                $("#user1_Weight").text(user.Weight);
+                $("#user_Weight").val(user.Weight);
+                $("#user1_Phone").text(user.Phone);
+                $("#user_Phone").val(user.Phone);
+                $("#user1_RegisterTime").text(user.RegisterTime);
+                $("#user_RegisterTime").val(user.RegisterTime);
+                $("#user1_LoginTime").text(user.LoginTime);
+                $("#user_LoginTime").val(user.LoginTime);
+                $("#user_pwd").val(user.UserPwd);
+                $("#user_Birthday").val($.RdfCommon.dateFormatter(user.Birthday, "yyyy-MM-dd"));
+                if (user.Height <= 0)
+                    $("#user_BMI").val("0");
+                else
+                    $("#user_BMI").val((user.Weight / (user.Height * user.Height / 10000)).toFixed(2));
+                $("#user1_BMI").text($("#user_BMI").val());
+                $("#user_XL").val(parseInt((220 - age) * 0.6) + "次/分～" + parseInt((220 - age) * 0.8) + "次/分");
+                $("#user1_XL").text($("#user_XL").val());
+            }
+            $.RdfCommon.get("Sys.User", "GetUserInfoByLogin", entity, function (msg) {
+                if (!msg.Success) {
+                    alert(msg.Error);
+                    return;
+                }
+                var user = JSON.parse(msg.Result);
+                var age = parseInt(msg.Value);
+                SetValue(user, age);
+            });
+
+            function LoadUser() {
+                $.RdfCommon.get("Sys.VideoInfo", "LoadVideoInfo", entity, function (msg) {
+                    if (!msg.Success) {
+                        alert(msg.Error);
+                        return;
+                    }
+                    $("#paginddiv").setPageCount(msg.Value);
+                    var data = JSON.parse(msg.Result);
+                    var tbody = $("#datatable tbody").empty();
+                    var date = new Date();
+                    for (var i = 0; i < data.length; i++) {
+                        var status = "";
+                        var str = "";
+                        if (data[i].DataStatus == 3) {
+                            status = "已禁用";
+                        } else {
+                            if (data[i].PlayStatus == 1) {
+                                status = "直播中";
+                                //if (data[i].DataStatus == 1)
+                                //    str = "<a onclick='OpenVideo(" + data[i].Id + ")'>进入</a>";
+                            }
+                            else if (data[i].PlayStatus == 2) {
+                                status = "已暂停";
+                                if (data[i].DataStatus == 1)
+                                    str = "<a onclick='OpenVideo(" + data[i].Id + ")'>进入</a>";
+                            }
+                            else if (data[i].PlayStatus == 3) {
+                                status = "已结束";
+                            }
+                            else if (data[i].PlayStatus == 4) {
+                                status = "已失效";
+                            }
+                            else {
+                                status = "未开始";
+                                if (data[i].DataStatus == 1)
+                                    str = "<a onclick='OpenVideo(" + data[i].Id + ")'>进入</a>";
+                            }
+                        }
+                        tbody.append("<tr>"
+                        + "<td width='8%'>" + data[i].Id + "</td>"
+                        + "<td width='14%'><div class='CoverPlan'><img src='" + data[i].Url + "?ts=" + date.getTime() + "'/></div></td>"
+                        + "<td width='20%'>" + data[i].Title + "</td>"
+                        + "<td width='24%'>" + data[i].BeginTime + "</td>"
+                        + "<td width='12%'>" + status + "</td>"
+                        + "<td width='10%'>" + str + "</td>"
+                            + "</tr>");
+                    }
+                });
+            }
+
+            $("#paginddiv").paging({
+                pageCount: 1,
+                selected: function (index) {
+                    entity.pageIndex = index;
+                    LoadUser();
+                }
+            });
+            LoadUser();
+            $("#title_img").click(function () {
+                $.RdfCommon.picturePreview($.RdfCommon.clearFileValue("upload"), { ImgId: "title_img" });
+                $("#upload").trigger("click");
+            });
+            //保存
+            $("#btn_div1 a:last-of-type").click(function () {
+                var that = this;
+                $(that).attr("disabled", "disabled");
+                var en = { userId: entity.userId, Title: $("#txt_title").val(), BeginTime: $("#datetimepicker11").val(), PlayLongTime: $("#txt_longtime").val() };
+                if (!en.Title) {
+                    alert("直播标题不能为空!");
+                    $(that).removeAttr("disabled");
+                    return;
+                }
+                if (!en.BeginTime) {
+                    alert("直播开始时间不能为空!");
+                    $(that).removeAttr("disabled");
+                    return;
+                }
+                if (!en.PlayLongTime || en.PlayLongTime <= 0) {
+                    alert("直播持续分钟不能为空,且大于0!");
+                    $(that).removeAttr("disabled");
+                    return;
+                }
+                if (en.PlayLongTime>480) {
+                    alert("直播持续分钟不能超过480!");
+                    $(that).removeAttr("disabled");
+                    return;
+                }
+                $.RdfCommon.post("Sys.VideoInfo", "AddVideoInfo", en, function (rmsg) {
+                    if (!rmsg.Success) {
+                        alert(rmsg.Error);
+                        $(that).removeAttr("disabled");
+                        return;
+                    }
+                    LoadUser();
+                    var url = $("#upload").val();
+                    if (url) {
+                        var file = document.getElementById("upload").files[0];
+                        if (file.size > 1024 * 1024 * 2) {
+                            alert("图片大小不能超过2MB!");
+                            return;
+                        }
+                        $.RdfCommon.fileUpLoad([{
+                            file: file,
+                            param: { type: "VideoTitleImage", id: rmsg.Result },
+                            callback: function (msg, count, size) {
+                                if (msg.Success) {
+                                    if (count == size) {
+                                        $("#dialog0").hide("slow");
+                                        $("#dialog1").hide("slow");
+                                        alert("上传成功!");
+                                    }
+                                } else {
+                                    alert(msg.Error);
+                                }
+                            }
+                        }]);
+                    } else {
+                        $("#dialog0").hide("slow");
+                        $("#dialog1").hide("slow");
+                        alert("上传成功!");
+                    }
+                    $(that).removeAttr("disabled");
+                });
+
+            });
+            //创建直播
+            $(".coach_infor button").click(function () {
+                $("#dialog1").show("slow");
+                $.RdfCommon.clearFileValue("upload");
+                $("#title_img").attr("src", "");
+            });
+
+        });
+    </script>
+    <style type="text/css">
+        * {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+            border: 0;
+            outline: none;
+            font-family: "PingFangSC-Medium";
+            color: #333;
+            text-decoration: none;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .box {
+            width: 100%;
+            height: 100%;
+            background: url(Images/resajz-17@2x.png) no-repeat 0 0;
+            background-size: 100%;
+        }
+
+        a, span {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="con_right_infor">
+        <!--
+        描述：个人信息
+        -->
+        <div class="coach_infor">
+            <div class="coach_infor_top">
+                <dl>
+                    <dt><img id="user1_Url" src="" /></dt>
+                    <dd>
+                        <span id="user1_Id" style="display:none;"></span>
+                        <span id="user1_UId"></span>
+                        <a id="user1_UserName">杨洋</a>
+                        <a class="sex"><img id="seximage" src="Images/18.png" /></a>
+                    </dd>
+
+                </dl>
+                <span class="set"></span>
+            </div>
+            <ul>
+                <li><span>性别</span><a id="user1_Sex"></a></li>
+                <li><span>手机号</span><a id="user1_Phone"></a></li>
+                <li><span>注册时间</span><a id="user1_RegisterTime"></a></li>
+                <li><span>最后登陆时间</span><a id="user1_LoginTime"></a></li>
+                <li><span>身高(cm)</span><a id="user1_Height"></a></li>
+                <li><span>体重(kg)</span><a id="user1_Weight"></a></li>
+                <li><span>年龄</span><a id="user1_Age"></a></li>
+                <li><span>BMI</span><a id="user1_BMI"></a></li>
+                <li><span>燃脂心率</span><a id="user1_XL"></a></li>
+            </ul>
+            <button>创建直播</button>
+        </div>
+        <!--
+            描述：教练列表
+        -->
+        <div class="coach_list">
+            <h2>直播列表</h2>
+            <div class="coach_list_tab">
+                <table id="datatable">
+                    <thead>
+                        <tr>
+                            <th width="8%">ID</th>
+                            <th width="14%">封面图</th>
+                            <th width="20%">直播标题</th>
+                            <th width="24%">直播开始时间</th>
+                            <th width="12%">直播状态</th>
+                            <th width="10%"><!--操作--></th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div id="paginddiv"></div>
+        </div>
+
+        <!--
+            描述：点击设置按钮，个人信息显示
+        -->
+        <div id="dialog0" class="T_detail">
+            <input type="file" style="display:none;" id="user_Upload" />
+            <input id="user_Id" type="hidden" />
+            <table>
+                <tr>
+                    <td><span>头像</span></td>
+                    <td><img id="user_Url" title="点击上传图片" class="user_headimg" src="" /></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><span>账号</span></td>
+                    <td><input maxlength="20" id="user_UId" type="text" value="" /></td>
+                    <td><span>密码</span></td>
+                    <td><input maxlength="36" id="user_pwd" type="password" value="" /></td>
+                </tr>
+                <tr>
+                    <td><span>姓名</span></td>
+                    <td><input maxlength="16" id="user_UserName" type="text" value="" /></td>
+                    <td><span>身高(cm)</span></td>
+                    <td><input maxlength="6" id="user_Height" type="text" value="" /></td>
+                </tr>
+                <tr>
+                    <td><span>性别</span></td>
+                    <td><input style="width:30%;" checked="checked" id="sex_man" name="sex" type="radio" />男<input style="width:30%;" id="sex_woman" name="sex" type="radio" />女</td>
+                    <td><span>体重(kg)</span></td>
+                    <td><input maxlength="6" id="user_Weight" type="text" value="" /></td>
+                </tr>
+                <tr>
+                    <td><span>手机号</span></td>
+                    <td><input maxlength="11" id="user_Phone" type="text" value="" /></td>
+                    <td><span>生日</span></td>
+                    <td><input maxlength="10" id="user_Birthday" type="text" value="" /></td>
+                </tr>
+                <tr>
+                    <td><span>注册时间</span></td>
+                    <td><input disabled="disabled" id="user_RegisterTime" type="text" value="" /></td>
+                    <td><span>BMI</span></td>
+                    <td><input disabled="disabled" id="user_BMI" type="text" value="" /></td>
+                </tr>
+                <tr>
+                    <td><span>最后登陆时间</span></td>
+                    <td><input disabled="disabled" id="user_LoginTime" type="text" value="" /></td>
+                    <td><span>燃脂心率</span></td>
+                    <td><input disabled="disabled" id="user_XL" type="text" value="" /></td>
+                </tr>
+                <tr style="height:120px;vertical-align:bottom;">
+                    <td colspan="4">
+                        <div id="btn_div0" class="T_btn">
+                            <a>关闭</a>
+                            <a>更新</a>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <!--
+            描述：创建直播
+        -->
+        <div id="dialog1" class="T_detail">
+            <input type="file" style="display:none;" id="upload" />
+            <table>
+                <tr>
+                    <td><span>封面图</span></td>
+                    <td><img id="title_img" title="点击上传图片" style="height:200px;width:300px;border:1px solid #ccc;cursor:pointer; border-radius:5px;" src="" /></td>
+                </tr>
+                <tr>
+                    <td><span>标题</span></td>
+                    <td><input type="text" id="txt_title" maxlength="16" style="width:300px;" value="" /></td>
+                </tr>
+                <tr>
+                    <td><span>创建直播时间</span></td>
+                    <td><input type="text" style="width:300px;" maxlength="20" id="datetimepicker11" /></td>
+                </tr>
+                <tr>
+                    <td><span>直播持续分钟</span></td>
+                    <td><input type="text" id="txt_longtime" maxlength="8" style="width:300px;" /></td>
+                    <td><span>分钟</span></td>
+                </tr>
+                <tr style="height:120px;vertical-align:bottom;">
+                    <td colspan="3">
+                        <div id="btn_div1" class="T_btn">
+                            <a>取消</a>
+                            <a>上传</a>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

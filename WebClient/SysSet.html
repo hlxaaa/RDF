@@ -1,0 +1,104 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>系统设置</title>
+    <script src="Scripts/jquery.min.js"></script>
+    <script src="Scripts/jquery.cookie.js"></script>
+    <script src="Scripts/common.js"></script>
+    <link href="Css/publick.css" rel="stylesheet" />
+    <script type="text/javascript">
+        $(function () {
+            var user = JSON.parse($.cookie("userCookie"));
+            $("#user_UserName").text(user.UserName);
+            if (user.UId != "admin")
+                $(".change1").hide();
+
+            $("#btn_editpwd").click(function () {
+                window.location.href = "EditPwd.html";
+            });
+        });
+    </script>
+    <style type="text/css">
+        .password {
+            width: 580px;
+            height: 516px;
+            background: rgba(255,255,255,.8);
+            border: 1px solid #979797;
+            border-radius: 17px;
+            box-sizing: border-box;
+            padding: 30px 20px;
+            float: left;
+            z-index: 10;
+            margin: 70px 0 0 225px;
+        }
+
+        .change {
+            width: 100%;
+            height: 44px;
+            line-height: 44px;
+            background: #F3F3F3;
+            border: 1px solid #979797;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+            .change a, .change span {
+                float: left;
+            }
+
+                .change a:first-of-type {
+                    width: 25%;
+                }
+
+                .change a:last-of-type {
+                    width: 40%;
+                }
+
+            .change span {
+                width: 35%;
+                cursor: pointer;
+                font-size: 16px;
+                color: #4A90E2;
+                letter-spacing: -0.64px;
+                background: url(Images/icon.png) no-repeat 80% center;
+            }
+
+        .change1 {
+            width: 100%;
+            height: 44px;
+            line-height: 44px;
+            background: #F3F3F3;
+            border: 1px solid #979797;
+            border-radius: 6px;
+            text-align: left;
+        }
+
+            .change1 a {
+                cursor: pointer;
+                font-size: 16px;
+                width: 90%;
+                margin: 0 auto;
+                letter-spacing: -0.64px;
+                background: url(../../images/13.png) no-repeat right center;
+            }
+    </style>
+</head>
+<body>
+    <div class="password">
+        <div class="change">
+            <a>登录名</a><a id="user_UserName"></a><span id="btn_editpwd">修改密码</span>
+        </div>
+        <div class="change1" style="margin-top:10px;">
+            <a href="About.html">关于我们</a>
+        </div>
+        <div class="change1" style="margin-top:10px;">
+            <a href="FeedBack.html">意见反馈</a>
+        </div>
+        <div class="change1" style="margin-top:10px;">
+            <a href="ParamSet.html">参数设置</a>
+        </div>
+    </div>
+</body>
+</html>

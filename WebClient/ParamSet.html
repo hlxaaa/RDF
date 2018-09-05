@@ -1,0 +1,145 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>参数设置</title>
+    <link rel="stylesheet" href="Css/user_infor.css" />
+    <link href="Css/paging.css" rel="stylesheet" />
+    <link rel="stylesheet" href="Css/jquery.datetimepicker.css" />
+    <script src="Scripts/jquery.min.js"></script>
+    <script src="Scripts/jquery.cookie.js"></script>
+    <script src="Scripts/paging.js"></script>
+    <script src="Scripts/common.js"></script>
+    <script src="Scripts/jquery.datetimepicker.full.js"></script>
+    <script type="text/javascript">
+        function DeleteRow(node) {
+            if (confirm("确定要删除吗？")) {
+                $(node).parent().parent().remove();
+            }
+        }
+        $(function () {
+            var body = $("#datatable tbody");
+            function GetRowStr(row) {
+                var options = "";
+                if (row.type==0) {
+                    options = "<option value='0' selected='selected'>一体式电子表</option><option value='1'>分离式设备</option><option value='2'>控制一体电子表</option>";
+                } else if (row.type == 1) {
+                    options = "<option value='0'>一体式电子表</option><option value='1' selected='selected'>分离式设备</option><option value='2'>控制一体电子表</option>";
+                } else {
+                    options = "<option value='0'>一体式电子表</option><option value='1'>分离式设备</option><option value='2' selected='selected'>控制一体电子表</option>";
+                }
+                return "<tr><td><input maxlength='10' type='text' value=\"" + row.key + "\"/></td>"
+                    + "<td><input maxlength='50' type='text' value=\"" + row.value + "\"/></td>"
+                    + "<td><textarea rows=\"3\" cols=\"50\">" + row.uuid + "</textarea></td>"
+                    + "<td><select>" + options + "</select></td>"
+                    + "<td><input maxlength='50' type='text' value=\"" + row.remark + "\"/></td>"
+                    + "<td><a onclick='DeleteRow(this)' href='#'>移除</a></td></tr>";
+            }
+            $("#btn_add").click(function () {
+                body.append(GetRowStr({ key: "", value: "",uuid:"",type:0, remark: "" }));
+            });
+            $("#btn_save").click(function () {
+                var array = [];
+                $("#datatable tbody tr").each(function () {
+                    var ipts = $(this).find("input[type='text']");
+                    var sels = $(this).find("select");
+                    var area = $(this).find("textarea");
+                    array.push({ key: ipts.eq(0).val(), value: ipts.eq(1).val(), uuid: area.eq(0).val(), type: sels.eq(0).val(), remark: ipts.eq(2).val() });
+                });
+                for (var i = 0; i < array.length; i++) {
+                    if (!array[i].key) {
+                        alert("键不能为空!");
+                        return;
+                    }
+                    if (!array[i].value) {
+                        alert("值不能为空!");
+                        return;
+                    }
+                }
+                $.RdfCommon.post("Sys.ParamSet", "SaveData", { data: array }, function (msg) {
+                    if (!msg.Success) {
+                        alert(msg.Error);
+                        return;
+                    }
+                    alert("保存成功!");
+                });
+            });
+            $.RdfCommon.post("Sys.ParamSet", "GetData", "", function (msg) {
+                if (!msg.Success) {
+                    alert(msg.Error);
+                    return;
+                }
+                var data = JSON.parse(msg.Result);
+                for (var i = 0; i < data.length; i++) {
+                    body.append(GetRowStr(data[i]));
+                }
+            });
+        });
+    </script>
+    <style type="text/css">
+        .content {
+            width: 870px;
+            height: 516px;
+            background: rgba(255,255,255,.8);
+            border: 1px solid #979797;
+            border-radius: 17px;
+            padding: 30px 20px;
+            margin: 70px 0 0 225px;
+            overflow-y: auto;
+        }
+
+        .setBtn {
+            border: none;
+            height: 28px;
+            width: 60px;
+            margin: 3px;
+            color: #ffffff;
+            border-radius: 3px;
+        }
+
+        .content table tbody input,.content table tbody select,.content table tbody textarea {
+            height: 100%;
+            width: 100%;
+            background:none;
+            border:none;
+        }
+
+        .content table {
+            border-collapse: collapse;
+            cursor: pointer;
+            text-align: center;
+        }
+
+            .content table td {
+                border: 1px solid #979797;
+                height: 30px;
+            }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <table id="datatable" style="width:850px;margin:auto;">
+            <thead>
+                <tr>
+                    <td style="width:80px;">键</td>
+                    <td style="width:80px;">值</td>
+                    <td style="width:400px;">UUID</td>
+                    <td style="width:110px;">协议类型</td>
+                    <td style="width:100px;">备注</td>
+                    <td style="width:80px;">操作</td>
+                </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="6">
+                        <input class="setBtn" id="btn_add" type="button" value="新增" style="background:#ffd800;" />
+                        <input class="setBtn" id="btn_save" type="button" value="保存" style="background:#1eb95a;" />
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</body>
+</html>

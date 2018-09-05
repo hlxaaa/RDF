@@ -1,0 +1,345 @@
+﻿<style>
+    .info-time-wrapper {
+    width:200px;
+    height:200px;
+    margin-top:-34px;
+    margin-left:-20px;
+    position:absolute;
+    }
+    .info-data1, .info-time {
+        cursor: pointer;
+    }
+
+    .img-go {
+        margin-left: 66px;
+        margin-top: 55px;
+    }
+
+    .fl {
+        float: left;
+    }
+
+    .fr {
+        float: right;
+    }
+
+    .fc {
+        clear: both;
+    }
+
+    .ft12 {
+        font-size: 12px;
+    }
+
+    .ft20 {
+        font-size: 20px;
+    }
+
+    .ft48 {
+        font-size: 48px;
+    }
+
+    .ft61 {
+        font-size: 6.1px;
+    }
+
+    .blue {
+        color: #68edf7;
+    }
+
+    .orange {
+        color: #ff5e00;
+    }
+
+    .green {
+        color: #00ff3c;
+    }
+
+    body {
+        font-family: 'Digital-7Mono';
+        background-image: url('../../Images/Gym/bg.png');
+    }
+
+    .info-headImg {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        margin-left: 54px;
+        margin-top: 23px;
+    }
+
+    .info-data {
+        margin-left: 20px;
+        margin-top: 28px;
+        width: 232px;
+        height: 172px;
+        /*border: 1px solid red;*/
+    }
+
+    .info-thisTime {
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+        width: 125px;
+        height: 33px;
+        margin-left: 49px;
+        margin-top: 175px;
+    }
+
+    .info-thisTime-blue {
+        background-image: url('../../Images/Gym/time-blue.png');
+    }
+
+    .info-thisTime-green {
+        background-image: url('../../Images/Gym/time-green.png');
+    }
+
+    .info-thisTime-orange {
+        background-image: url('../../Images/Gym/time-orange.png');
+    }
+
+
+    .info {
+        margin: 0 32px 57px 32px;
+        width: 412px;
+        height: 201px;
+        /*background-image: url('../../Images/Gym/border-blue.png');*/
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+        float: left;
+    }
+
+    .info-green {
+        background-image: url('../../Images/Gym/border-green.png');
+    }
+
+    .info-blue {
+        background-image: url('../../Images/Gym/border-blue.png');
+    }
+
+    .info-orange {
+        background-image: url('../../Images/Gym/border-orange.png');
+    }
+
+    .info-data1 {
+        height: 33%;
+        width: 50%;
+    }
+
+    .info-data-name {
+        text-align: center;
+        width: 40%;
+    }
+
+    .info-data-tip {
+        font-size: 6px;
+        position: absolute;
+        margin-top: -0.1px;
+        margin-left: 2px;
+    }
+
+    .info-data-no {
+        /*margin-left:15px;*/
+        width: 60px;
+        text-align: center;
+        margin-top: 7px;
+    }
+
+    .info-time {
+        /*position: absolute;*/
+        margin-left: -1px;
+        margin-top: -7px;
+    }
+
+    .info-thisTime-fitnow {
+        background-image: url('../../Images/Gym/fitnow.png');
+    }
+</style>
+
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Data</title>
+    <link href="~/Current/css/ziti.css" rel="stylesheet" />
+
+</head>
+<body>
+    <div class="info info-blue blue ">
+        <img class="info-headImg fl" src="~/UpLoadFile/AppHeadImage/11.jpg" />
+        <div class="info-data fl">
+            <div class="info-data1 fl">
+                <div class="info-data-name ft12 fl">
+                    <div>里程</div>
+                    <div>DIST</div>
+                </div>
+                <div class=" info-data-no ft20 fl">0.00<span class="info-data-tip">KM</span></div>
+            </div>
+            <div class="info-data1 fl">
+                <div class="info-data-name ft12 fl">
+                    <div>阻力</div>
+                    <div>DRAG</div>
+                </div>
+                <div class=" info-data-no ft20 fl">0<span class="info-data-tip">LB</span></div>
+            </div>
+            <div class="info-data1 fl">
+                <div class="info-data-name ft12 fl">
+                    <div>速度</div>
+                    <div>SPEED</div>
+                </div>
+                <div class=" info-data-no ft20 fl">40<span class="info-data-tip">KM/H</span></div>
+            </div>
+            <div class="info-data1 fl">
+                <div class="info-data-name ft12 fl">
+                    <div>瓦特</div>
+                    <div>WATT</div>
+                </div>
+                <div class=" info-data-no ft20 fl">0</div>
+            </div>
+            <div class="info-data1 fl">
+                <div class="info-data-name ft12 fl">
+                    <div>卡路里</div>
+                    <div>CAL</div>
+                </div>
+                <div class=" info-data-no ft20 fl">0</div>
+            </div>
+            <div class="info-data1 fl">
+                <div class="info-data-name ft12 fl">
+                    <div>心率</div>
+                    <div>RATE</div>
+                </div>
+                <div class=" info-data-no ft20 fl">0</div>
+            </div>
+        </div>
+        <div class="info-thisTime info-thisTime-blue  ft48">
+            <div class="info-time">11:22"</div>
+        </div>
+        <div class="fc"></div>
+    </div>
+
+    <div class="info info-green green ">
+        <img class="info-headImg fl" src="~/UpLoadFile/AppHeadImage/11.jpg" />
+        <div class="info-data fl">
+            <div class="info-data1 fl">
+                <div class="info-data-name ft12 fl">
+                    <div>里程</div>
+                    <div>DIST</div>
+                </div>
+                <div class=" info-data-no ft20 fl">0.00<span class="info-data-tip">KM</span></div>
+            </div>
+            <div class="info-data1 fl">
+                <div class="info-data-name ft12 fl">
+                    <div>阻力</div>
+                    <div>DRAG</div>
+                </div>
+                <div class=" info-data-no ft20 fl">0<span class="info-data-tip">LB</span></div>
+            </div>
+            <div class="info-data1 fl">
+                <div class="info-data-name ft12 fl">
+                    <div>速度</div>
+                    <div>SPEED</div>
+                </div>
+                <div class=" info-data-no ft20 fl">40<span class="info-data-tip">KM/H</span></div>
+            </div>
+            <div class="info-data1 fl">
+                <div class="info-data-name ft12 fl">
+                    <div>瓦特</div>
+                    <div>WATT</div>
+                </div>
+                <div class=" info-data-no ft20 fl">0</div>
+            </div>
+            <div class="info-data1 fl">
+                <div class="info-data-name ft12 fl">
+                    <div>卡路里</div>
+                    <div>CAL</div>
+                </div>
+                <div class=" info-data-no ft20 fl">0</div>
+            </div>
+            <div class="info-data1 fl">
+                <div class="info-data-name ft12 fl">
+                    <div>心率</div>
+                    <div>RATE</div>
+                </div>
+                <div class=" info-data-no ft20 fl">0</div>
+            </div>
+        </div>
+        <div class="info-thisTime info-thisTime-green  ft48">
+            <div class="info-time">11:22"</div>
+        </div>
+        <div class="fc"></div>
+    </div>
+
+    <div class="info info-orange orange ">
+        <img class="info-headImg fl" src="~/UpLoadFile/AppHeadImage/11.jpg" />
+        <div class="info-data fl">
+            <div class="info-data1 fl">
+                <div class="info-data-name ft12 fl">
+                    <div>里程</div>
+                    <div>DIST</div>
+                </div>
+                <div class=" info-data-no ft20 fl">0.00<span class="info-data-tip">KM</span></div>
+            </div>
+            <div class="info-data1 fl">
+                <div class="info-data-name ft12 fl">
+                    <div>阻力</div>
+                    <div>DRAG</div>
+                </div>
+                <div class=" info-data-no ft20 fl">0<span class="info-data-tip">LB</span></div>
+            </div>
+            <div class="info-data1 fl">
+                <div class="info-data-name ft12 fl">
+                    <div>速度</div>
+                    <div>SPEED</div>
+                </div>
+                <div class=" info-data-no ft20 fl">40<span class="info-data-tip">KM/H</span></div>
+            </div>
+            <div class="info-data1 fl">
+                <div class="info-data-name ft12 fl">
+                    <div>瓦特</div>
+                    <div>WATT</div>
+                </div>
+                <div class=" info-data-no ft20 fl">0</div>
+            </div>
+            <div class="info-data1 fl">
+                <div class="info-data-name ft12 fl">
+                    <div>卡路里</div>
+                    <div>CAL</div>
+                </div>
+                <div class=" info-data-no ft20 fl">0</div>
+            </div>
+            <div class="info-data1 fl">
+                <div class="info-data-name ft12 fl">
+                    <div>心率</div>
+                    <div>RATE</div>
+                </div>
+                <div class=" info-data-no ft20 fl">0</div>
+            </div>
+        </div>
+        <div class="info-thisTime info-thisTime-orange  ft48">
+            <div class="info-time">11:22"</div>
+        </div>
+        <div class="fc"></div>
+    </div>
+
+    <div class="info info-blue blue ">
+        @*<img src="~/Images/Gym/headportrait.png" />*@
+        <img class="info-headImg fl" src="~/Images/Gym/headportrait.png" />
+        <div class="info-data fl">
+            <img class="img-go" src="~/Images/Gym/go.png" />
+        </div>
+        <div class="info-thisTime info-thisTime-fitnow">
+            @*<div class="info-time">11:22"</div>*@
+        </div>
+        <div class="fc"></div>
+    </div>
+    <script src="~/assets/js/core/jquery.min.js"></script>
+    <script src="~/Current/js/ajax.js"></script>
+    <script src="~/Current/layer/layer.js"></script>
+    <script src="~/Current/js/Gym/data.js"></script>
+</body>
+</html>

@@ -1,0 +1,666 @@
+﻿@{
+    var auth = new DbOpertion.Models.Extend.AllModel.ServerUserItem();
+    auth = ViewBag.userAuth;
+}
+<!DOCTYPE html>
+<!--[if IE 9]>         <html class="ie9 no-focus"> <![endif]-->
+<!--[if gt IE 9]><!-->
+<html class="no-focus">
+<!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+
+    <title>后台管理</title>
+
+    <meta name="description" content="OneUI - Admin Dashboard Template & UI Framework">
+    <meta name="author" content="pixelcave">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1.0">
+
+    <!-- Icons -->
+    <!-- The following icons can be replaced with your own, they are used by desktop and mobile browsers -->
+    <link rel="shortcut icon" href="~/Images/New/favicon_16.ico">
+
+    @*<link rel="icon" type="image/png" href="~/assets/img/favicons/favicon-16x16.png" sizes="16x16">
+    <link rel="icon" type="image/png" href="~/assets/img/favicons/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="~/assets/img/favicons/favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="~/assets/img/favicons/favicon-160x160.png" sizes="160x160">
+    <link rel="icon" type="image/png" href="~/assets/img/favicons/favicon-192x192.png" sizes="192x192">
+
+    <link rel="apple-touch-icon" sizes="57x57" href="~/assets/img/favicons/apple-touch-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="~/assets/img/favicons/apple-touch-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="~/assets/img/favicons/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="~/assets/img/favicons/apple-touch-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="~/assets/img/favicons/apple-touch-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="~/assets/img/favicons/apple-touch-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="~/assets/img/favicons/apple-touch-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="~/assets/img/favicons/apple-touch-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="~/assets/img/favicons/apple-touch-icon-180x180.png">*@
+    <!-- END Icons -->
+    <!-- Stylesheets -->
+    <!-- Web fonts -->
+    @*<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400italic,600,700%7COpen+Sans:300,400,400italic,600,700">*@
+
+    <!-- OneUI CSS framework -->
+    <link rel="stylesheet" id="css-main" href="~/assets/css/oneui.css">
+    <link href="~/Current/css/layout.css?201809031504" rel="stylesheet" />
+    @RenderSection("css", required: false)
+    <!-- You can include a specific file from css/themes/ folder to alter the default color theme of the template. eg: -->
+    <!-- <link rel="stylesheet" id="css-theme" href="~/assets/css/themes/flat.min.css"> -->
+    <!-- END Stylesheets -->
+</head>
+<body>
+    <!-- Page Container -->
+    <!--
+        Available Classes:
+
+        'sidebar-l'                  Left Sidebar and right Side Overlay
+        'sidebar-r'                  Right Sidebar and left Side Overlay
+        'sidebar-mini'               Mini hoverable Sidebar (> 991px)
+        'sidebar-o'                  Visible Sidebar by default (> 991px)
+        'sidebar-o-xs'               Visible Sidebar by default (< 992px)
+
+        'side-overlay-hover'         Hoverable Side Overlay (> 991px)
+        'side-overlay-o'             Visible Side Overlay by default (> 991px)
+
+        'side-scroll'                Enables custom scrolling on Sidebar and Side Overlay instead of native scrolling (> 991px)
+
+        'header-navbar-fixed'        Enables fixed header
+    -->
+
+
+    <div id="page-container" class="sidebar-l sidebar-o side-scroll header-navbar-fixed">
+        <!-- Side Overlay-->
+        <aside id="side-overlay">
+            <!-- Side Overlay Scroll Container -->
+            <div id="side-overlay-scroll">
+                <!-- Side Header -->
+                <div class="side-header side-content">
+                    <!-- Layout API, functionality initialized in App() -> uiLayoutApi() -->
+                    <button class="btn btn-default pull-right" type="button" data-toggle="layout" data-action="side_overlay_close">
+                        <i class="fa fa-times"></i>
+                    </button>
+                    <span>
+                        @*<img class="img-avatar img-avatar32" src="~/assets/img/avatars/avatar10.jpg" alt="">*@
+                        <img class="img-avatar img-avatar32" src="~/Images/New/favicon.png" alt="">
+                        <span class="font-w600 push-10-l">Jeremy Fuller</span>
+                    </span>
+                </div>
+                <!-- END Side Header -->
+                <!-- Side Content -->
+                <div class="side-content remove-padding-t">
+                    <!-- Notifications -->
+                    <div class="block pull-r-l">
+                        <div class="block-header bg-gray-lighter">
+                            <ul class="block-options">
+                                <li>
+                                    <button type="button" data-toggle="block-option" data-action="refresh_toggle" data-action-mode="demo"><i class="si si-refresh"></i></button>
+                                </li>
+                                <li>
+                                    <button type="button" data-toggle="block-option" data-action="content_toggle"></button>
+                                </li>
+                            </ul>
+                            <h3 class="block-title">Recent Activity</h3>
+                        </div>
+                        <div class="block-content">
+                            <!-- Activity List -->
+                            <ul class="list list-activity">
+                                <li>
+                                    <i class="si si-wallet text-success"></i>
+                                    <div class="font-w600">New sale ($15)</div>
+                                    <div><a href="javascript:void(0)">Admin Template</a></div>
+                                    <div><small class="text-muted">3 min ago</small></div>
+                                </li>
+                                <li>
+                                    <i class="si si-pencil text-info"></i>
+                                    <div class="font-w600">You edited the file</div>
+                                    <div><a href="javascript:void(0)"><i class="fa fa-file-text-o"></i> Documentation.doc</a></div>
+                                    <div><small class="text-muted">15 min ago</small></div>
+                                </li>
+                                <li>
+                                    <i class="si si-close text-danger"></i>
+                                    <div class="font-w600">Project deleted</div>
+                                    <div><a href="javascript:void(0)">Line Icon Set</a></div>
+                                    <div><small class="text-muted">4 hours ago</small></div>
+                                </li>
+                                <li>
+                                    <i class="si si-wrench text-warning"></i>
+                                    <div class="font-w600">Core v2.5 is available</div>
+                                    <div><a href="javascript:void(0)">Update now</a></div>
+                                    <div><small class="text-muted">6 hours ago</small></div>
+                                </li>
+                            </ul>
+                            <div class="text-center">
+                                <small><a href="javascript:void(0)">Load More..</a></small>
+                            </div>
+                            <!-- END Activity List -->
+                        </div>
+                    </div>
+                    <!-- END Notifications -->
+                    <!-- Online Friends -->
+                    <div class="block pull-r-l">
+                        <div class="block-header bg-gray-lighter">
+                            <ul class="block-options">
+                                <li>
+                                    <button type="button" data-toggle="block-option" data-action="refresh_toggle" data-action-mode="demo"><i class="si si-refresh"></i></button>
+                                </li>
+                                <li>
+                                    <button type="button" data-toggle="block-option" data-action="content_toggle"></button>
+                                </li>
+                            </ul>
+                            <h3 class="block-title">Online Friends</h3>
+                        </div>
+                        <div class="block-content block-content-full">
+                            <!-- Users Navigation -->
+                            <ul class="nav-users">
+                                <li>
+                                    <a href="base_pages_profile.html">
+                                        <img class="img-avatar" src="~/assets/img/avatars/avatar5.jpg" alt="">
+                                        <i class="fa fa-circle text-success"></i> Denise Watson
+                                        <div class="font-w400 text-muted"><small>Copywriter</small></div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="base_pages_profile.html">
+                                        <img class="img-avatar" src="~/assets/img/avatars/avatar15.jpg" alt="">
+                                        <i class="fa fa-circle text-success"></i> Dennis Ross
+                                        <div class="font-w400 text-muted"><small>Web Developer</small></div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="base_pages_profile.html">
+                                        <img class="img-avatar" src="~/assets/img/avatars/avatar7.jpg" alt="">
+                                        <i class="fa fa-circle text-success"></i> Judy Alvarez
+                                        <div class="font-w400 text-muted"><small>Web Designer</small></div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="base_pages_profile.html">
+                                        <img class="img-avatar" src="~/assets/img/avatars/avatar2.jpg" alt="">
+                                        <i class="fa fa-circle text-warning"></i> Emma Cooper
+                                        <div class="font-w400 text-muted"><small>Photographer</small></div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="base_pages_profile.html">
+                                        <img class="img-avatar" src="~/assets/img/avatars/avatar9.jpg" alt="">
+                                        <i class="fa fa-circle text-warning"></i> John Parker
+                                        <div class="font-w400 text-muted"><small>Graphic Designer</small></div>
+                                    </a>
+                                </li>
+                            </ul>
+                            <!-- END Users Navigation -->
+                        </div>
+                    </div>
+                    <!-- END Online Friends -->
+                    <!-- Quick Settings -->
+                    <div class="block pull-r-l">
+                        <div class="block-header bg-gray-lighter">
+                            <ul class="block-options">
+                                <li>
+                                    <button type="button" data-toggle="block-option" data-action="content_toggle"></button>
+                                </li>
+                            </ul>
+                            <h3 class="block-title">Quick Settings</h3>
+                        </div>
+                        <div class="block-content">
+                            <!-- Quick Settings Form -->
+                            <form class="form-bordered" action="index.html" method="post" onsubmit="return false;">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-xs-8">
+                                            <div class="font-s13 font-w600">Online Status</div>
+                                            <div class="font-s13 font-w400 text-muted">Show your status to all</div>
+                                        </div>
+                                        <div class="col-xs-4 text-right">
+                                            <label class="css-input switch switch-sm switch-primary push-10-t">
+                                                <input type="checkbox"><span></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-xs-8">
+                                            <div class="font-s13 font-w600">Auto Updates</div>
+                                            <div class="font-s13 font-w400 text-muted">Keep up to date</div>
+                                        </div>
+                                        <div class="col-xs-4 text-right">
+                                            <label class="css-input switch switch-sm switch-primary push-10-t">
+                                                <input type="checkbox"><span></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-xs-8">
+                                            <div class="font-s13 font-w600">Notifications</div>
+                                            <div class="font-s13 font-w400 text-muted">Do you need them?</div>
+                                        </div>
+                                        <div class="col-xs-4 text-right">
+                                            <label class="css-input switch switch-sm switch-primary push-10-t">
+                                                <input type="checkbox" checked><span></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-xs-8">
+                                            <div class="font-s13 font-w600">API Access</div>
+                                            <div class="font-s13 font-w400 text-muted">Enable/Disable access</div>
+                                        </div>
+                                        <div class="col-xs-4 text-right">
+                                            <label class="css-input switch switch-sm switch-primary push-10-t">
+                                                <input type="checkbox" checked><span></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                            <!-- END Quick Settings Form -->
+                        </div>
+                    </div>
+                    <!-- END Quick Settings -->
+                </div>
+                <!-- END Side Content -->
+            </div>
+            <!-- END Side Overlay Scroll Container -->
+        </aside>
+        <!-- END Side Overlay -->
+        <!-- Sidebar -->
+        <nav id="sidebar">
+            <!-- Sidebar Scroll Container -->
+            <div id="sidebar-scroll">
+                <!-- Sidebar Content -->
+                <!-- Adding .sidebar-mini-hide to an element will hide it when the sidebar is in mini mode -->
+                <div class="sidebar-content">
+                    <!-- Side Header -->
+                    <div class="side-header side-content bg-white-op">
+                        <!-- Layout API, functionality initialized in App() -> uiLayoutApi() -->
+                        <button class="btn btn-link text-gray pull-right hidden-md hidden-lg" type="button" data-toggle="layout" data-action="sidebar_close">
+                            <i class="fa fa-times"></i>
+                        </button>
+                        <img src="~/Images/16.png" alt="Alternate Text" style="height:40px;" />
+                    </div>
+                    <!-- END Side Header -->
+                    <!-- Side Content -->
+                    <div class="side-content">
+                        <ul class="nav-main">
+                            @if (auth.isEnglish != 1)
+                            {
+                                if (auth.menuIds.Contains(1))
+                                {
+                                    <li class="li-pass">
+                                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-clock"></i><span class="sidebar-mini-hide">审核管理</span></a>
+                                        <ul>
+                                            <li>
+                                                <a href="/pass/coach" class="a-passCoach">教练审核</a>
+                                            </li>
+                                            <li>
+                                                <a href="/pass/live" class="a-passLive">直播审核</a>
+                                            </li>
+                                            <li>
+                                                <a href="/pass/video" class="a-passVideo">教练视频审核</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                }
+                                if (auth.menuIds.Contains(2))
+                                {
+                                    <li class="li-sport">
+                                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-book-open"></i><span class="sidebar-mini-hide">运动干货管理</span></a>
+                                        <ul>
+                                            <li>
+                                                <a href="/common/index" class="a-sportIndex">运动干货</a>
+                                            </li>
+                                            <li>
+                                                <a href="/common/type" class="a-sportType">干货分类</a>
+                                            </li>
+                                            <li>
+                                                <a href="/common/msg" class="a-sportMsg">干货留言</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                }
+                                if (auth.menuIds.Contains(3))
+                                {
+                                    <li class="li-content">
+                                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-note"></i><span class="sidebar-mini-hide">内容管理</span></a>
+                                        <ul>
+                                            <li>
+                                                <a href="/content/videoList" class="a-video">视频管理</a>
+                                            </li>
+                                            <li>
+                                                <a href="/content/audioList" class="a-audio">音频管理</a>
+                                            </li>
+                                            <li>
+                                                <a href="/content/audioTypeList" class="a-audioType">专辑管理</a>
+                                            </li>
+                                            <li>
+                                                <a href="/content/LiveList" class="a-live">直播管理</a>
+                                            </li>
+                                            <li>
+                                                <a href="/content/coachlist" class="a-coach">教练管理</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                }
+                                if (auth.menuIds.Contains(4))
+                                {
+                                    <li class="li-setting">
+                                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-settings"></i><span class="sidebar-mini-hide">系统设置</span></a>
+                                        <ul>
+                                            <li class="li-about">
+                                                <a class="" data-toggle="nav-submenu" href="#">关于我们</a>
+                                                <ul>
+                                                    <li>
+                                                        <a class="a-about1" href="/common/about">中文版</a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="a-aboutE" href="/common/aboutE">英文版</a>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li class="li-agreement">
+                                                <a class="a-agreement" data-toggle="nav-submenu" href="#">注册协议</a>
+                                                <ul>
+                                                    <li>
+                                                        <a class="a-agreement1" href="/common/agreement">中文版</a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="a-agreementE" href="/common/agreementE">英文版</a>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a href="/user/UserAuth" class="a-auth">账号权限</a>
+                                            </li>
+                                            <li>
+                                                <a href="/common/AndroidVersion" class="a-version">安卓版本</a>
+                                            </li>
+                                            <li>
+                                                <a href="/common/paramset" class="a-paramset">参数设置</a>
+                                            </li>
+                                            <li>
+                                                <a href="/common/suggestion" class="a-suggestion">意见反馈</a>
+                                            </li>
+                                        </ul>
+
+                                    </li>
+                                }
+                                if (auth.menuIds.Contains(5))
+                                {
+                                    <li class="li-dragModel">
+                                        <a class="nav-submenu" data-toggle="nav-submenu" href="/dragmodel/modelList"><i class="si si-speedometer"></i><span class="sidebar-mini-hide">模式管理</span></a>
+                                    </li>
+                                }
+                                if (auth.menuIds.Contains(6))
+                                {
+                                    <li class="li-data">
+                                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="fa fa-database"></i><span class="sidebar-mini-hide">数据统计</span></a>
+                                        <ul>
+                                            <li>
+                                                <a href="/user/userdata" class="a-userdata">统计</a>
+                                            </li>
+                                            <li>
+                                                <a href="/user/userlist" class="a-userList">用户管理</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                }
+                                if (auth.menuIds.Contains(7))
+                                {
+                                    <li class="li-money">
+                                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="glyphicon glyphicon-credit-card"></i><span class="sidebar-mini-hide">财务管理</span></a>
+                                        <ul>
+                                            <li>
+                                                <a href="/pass/takecash" class="a-takecash">提现审核</a>
+                                            </li>
+                                            <li>
+                                                <a href="/pass/moneyDetail" class="a-moneyDetail">资金流水</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                }
+                                if (auth.menuIds.Contains(8))
+                                {
+                                    <li class="li-gym">
+                                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="glyphicon glyphicon-road"></i><span class="sidebar-mini-hide">健身房管理</span></a>
+                                        <ul>
+                                            <li>
+                                                <a href="/gym/gymList" class="a-gymList">健身房列表</a>
+                                            </li>
+                                            <li>
+                                                <a href="/gym/deviceList" class="a-deviceList">设备管理</a>
+                                            </li>
+                                            <li>
+                                                <a href="/gym/deviceData" class="a-deviceData">设备数据</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                }
+                            }
+                            else
+                            {
+                                <li class="li-gym2">
+                                    <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="fa fa-yelp"></i><span class="sidebar-mini-hide">健身房数据</span></a>
+                                    <ul>
+                                        <li>
+                                            <a href="/gym/server1" class="a-deviceList">设备管理</a>
+                                        </li>
+                                        <li>
+                                            <a href="/gym/data" class="a-deviceData">投影模式</a>
+                                        </li>
+                                        <li>
+                                            <a href="/gym/data1" class="a-data1">列表模式</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                    <!-- END Side Content -->
+                </div>
+                <!-- Sidebar Content -->
+            </div>
+            <!-- END Sidebar Scroll Container -->
+        </nav>
+        <!-- END Sidebar -->
+        <!-- Header -->
+        <header id="header-navbar" class="content-mini content-mini-full">
+            <!-- Header Navigation Right -->
+            <ul class="nav-header pull-right">
+                <li>
+                    <div class="btn-group">
+                        <button class="btn btn-default btn-image dropdown-toggle" data-toggle="dropdown" type="button">
+                            @*<img src="~/assets/img/avatars/avatar10.jpg" alt="Avatar">*@
+                            <img class="img-avatar img-avatar32" src="~/Images/New/favicon.png" alt="">
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-right">
+                            <li id="btn-setPwd">
+                                <a tabindex="-1">
+                                    <i class="si si-lock pull-right"></i>修改密码
+                                </a>
+                            </li>
+                            <li id="btn-loginOut">
+                                <a tabindex="-1">
+                                    <i class="si si-logout pull-right"></i>退出登录
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                @*<li>
+                        <button class="btn btn-default" data-toggle="layout" data-action="side_overlay_toggle" type="button">
+                            <i class="fa fa-tasks"></i>
+                        </button>
+                    </li>*@
+            </ul>
+            <!-- END Header Navigation Right -->
+            <!-- Header Navigation Left -->
+            <ul class="nav-header pull-left">
+                <li class="hidden-md hidden-lg">
+                    <!-- Layout API, functionality initialized in App() -> uiLayoutApi() -->
+                    <button class="btn btn-default" data-toggle="layout" data-action="sidebar_toggle" type="button">
+                        <i class="fa fa-navicon"></i>
+                    </button>
+                </li>
+                <li class="hidden-xs hidden-sm">
+                    <!-- Layout API, functionality initialized in App() -> uiLayoutApi() -->
+                    <button class="btn btn-default" data-toggle="layout" data-action="sidebar_mini_toggle" type="button">
+                        <i class="fa fa-ellipsis-v"></i>
+                    </button>
+                </li>
+                @*<li>
+                        <button class="btn btn-default pull-right" data-toggle="modal" data-target="#apps-modal" type="button">
+                            <i class="si si-grid"></i>
+                        </button>
+                    </li>*@
+                <li class="visible-xs">
+                    <!-- Toggle class helper (for .js-header-search below), functionality initialized in App() -> uiToggleClass() -->
+                    <button class="btn btn-default" data-toggle="class-toggle" data-target=".js-header-search" data-class="header-search-xs-visible" type="button">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </li>
+                @*<li class="js-header-search header-search">
+                        <form class="form-horizontal" action="base_pages_search.html" method="post">
+                            <div class="form-material form-material-primary input-group remove-margin-t remove-margin-b">
+                                <input class="form-control" type="text" id="base-material-text" name="base-material-text" placeholder="Search..">
+                                <span class="input-group-addon"><i class="si si-magnifier"></i></span>
+                            </div>
+                        </form>
+                    </li>*@
+            </ul>
+            <!-- END Header Navigation Left -->
+        </header>
+        <!-- END Header -->
+        <!-- Main Container -->
+        <main id="main-container">
+            <!-- Page Header -->
+            @RenderBody()
+            <!-- END Page Content -->
+        </main>
+        <!-- END Main Container -->
+        <!-- Footer -->
+        <footer id="page-footer" class="content-mini content-mini-full font-s12 bg-gray-lighter clearfix">
+            @*<div class="pull-right">
+                    Crafted with <i class="fa fa-heart text-city"></i> by <a class="font-w600" href="" target="_blank">pixelcave</a>
+                </div>
+                <div class="pull-left">
+                    <a class="font-w600" href="javascript:void(0)" target="_blank">OneUI 1.0</a> &copy; <span class="js-year-copy"></span>
+                </div>*@
+        </footer>
+        <!-- END Footer -->
+    </div>
+    <!-- END Page Container -->
+    <!-- Apps Modal -->
+    <!-- Opens from the button in the header -->
+    <div class="modal fade" id="apps-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-sm modal-dialog modal-dialog-top">
+            <div class="modal-content">
+                <!-- Apps Block -->
+                <div class="block block-themed block-transparent">
+                    <div class="block-header bg-primary-dark">
+                        <ul class="block-options">
+                            <li>
+                                <button data-dismiss="modal" type="button"><i class="si si-close"></i></button>
+                            </li>
+                        </ul>
+                        <h3 class="block-title">Apps</h3>
+                    </div>
+                    <div class="block-content">
+                        <div class="row text-center">
+                            <div class="col-xs-6">
+                                <a class="block block-rounded" href="index.html">
+                                    <div class="block-content text-white bg-default">
+                                        <i class="si si-speedometer fa-2x"></i>
+                                        <div class="font-w600 push-15-t push-15">Backend</div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-xs-6">
+                                <a class="block block-rounded" href="frontend_home.html">
+                                    <div class="block-content text-white bg-modern">
+                                        <i class="si si-rocket fa-2x"></i>
+                                        <div class="font-w600 push-15-t push-15">Frontend</div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- END Apps Block -->
+            </div>
+        </div>
+    </div>
+    <!-- END Apps Modal -->
+    <!-- OneUI Core JS: jQuery, Bootstrap, slimScroll, scrollLock, Appear, CountTo, Placeholder, Cookie and App.js -->
+    <script src="~/assets/js/core/jquery.min.js"></script>
+    <script src="~/assets/js/core/bootstrap.min.js"></script>
+    <script src="~/assets/js/core/jquery.slimscroll.min.js"></script>
+    <script src="~/assets/js/core/jquery.scrollLock.min.js"></script>
+    <script src="~/assets/js/core/jquery.appear.min.js"></script>
+    <script src="~/assets/js/core/jquery.countTo.min.js"></script>
+    <script src="~/assets/js/core/jquery.placeholder.min.js"></script>
+    <script src="~/assets/js/core/js.cookie.min.js"></script>
+    <script src="~/assets/js/app.js"></script>
+
+    <script src="~/Current/layer/layer.js"></script>
+
+    <script src="~/Current/js/ajax.js"></script>
+    <script src="~/Current/js/Layout.js"></script>
+    @RenderSection("js", required: false)
+</body>
+</html>
+
+<!-- Pop Out Modal -->
+<div class="modal fade" id="modal-setPwd" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-popout" style="width:600px;">
+        <div class="modal-content">
+            <div class="block block-themed block-transparent remove-margin-b">
+                <div class="block-header bg-primary-dark">
+                    <ul class="block-options">
+                        <li>
+                            <button data-dismiss="modal" type="button"><i class="si si-close"></i></button>
+                        </li>
+                    </ul>
+                    <h3 class="block-title">修改密码</h3>
+                </div>
+                <div class="block-content">
+                    <div class="block-content block-content-narrow">
+                        <div class="form-horizontal push-10-t" action="base_forms_elements_modern.html" method="post" onsubmit="return false;">
+                            <div class="form-group col-md-12 myfg">
+                                <label class="col-xs-4" for="example-email-input">原密码</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control spwd" type="password"  placeholder=""  autocomplete="new-password">
+                                </div>
+                            </div>
+                            <div class="form-group col-md-12 myfg">
+                                <label class="col-xs-4" for="example-email-input">新密码</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control newpwd" type="password" placeholder=""  autocomplete="new-password">
+                                </div>
+                            </div>
+                            <div class="form-group col-md-12 myfg">
+                                <label class="col-xs-4" for="example-email-input">确认密码</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control newpwd2" type="password"  placeholder=""  autocomplete="new-password">
+                                </div>
+                            </div>
+                            <div class="fc"></div>
+                        </div>
+                        <div class="fc"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-sm btn-default" type="button" data-dismiss="modal">关闭</button>
+                <button class="btn btn-sm btn-primary btn-save-setPwd" type="button"><i class="fa fa-check"></i> <font id="saveBtn">确定</font></button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END Pop Out Modal -->

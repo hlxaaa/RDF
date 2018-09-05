@@ -1,0 +1,246 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>教练直播列表</title>
+    <link rel="stylesheet" href="Css/user_infor.css" />
+    <link href="Css/paging.css" rel="stylesheet" />
+    <script src="Scripts/jquery.min.js"></script>
+    <script src="Scripts/jquery.cookie.js"></script>
+    <script src="Scripts/paging.js"></script>
+    <script src="Scripts/common.js"></script>
+    <script type="text/javascript">
+        var entity = {
+            search: "",
+            pageSize: 4,
+            pageIndex: 1
+        };
+        var selectId = 0;
+        function SetVideo(videoId) {
+            $.RdfCommon.get("Sys.VideoInfo", "SetVideo", { Id: selectId, VideoId: videoId }, function (msg) {
+                if (!msg.Success) {
+                    alert(msg.Error);
+                    return;
+                }
+                LoadUser();
+            });
+        }
+        function GetVideo(id) {
+            selectId = id;
+            window.open("PlayVideo.html");
+        }
+        //禁用
+        function PauseVideo(id) {
+            $.RdfCommon.get("Sys.VideoInfo", "PauseVideo", {Id: id }, function (msg) {
+                if (!msg.Success) {
+                    alert(msg.Error);
+                    return;
+                }
+                LoadUser();
+            });
+        }
+        //恢复
+        function ResumeVideo(id) {
+            $.RdfCommon.get("Sys.VideoInfo", "ResumeVideo", { Id: id }, function (msg) {
+                if (!msg.Success) {
+                    alert(msg.Error);
+                    return;
+                }
+                LoadUser();
+            });
+        }
+        function OpenVideo(id) {
+            window.open("Play.html?Id=" + id);
+        }
+        function AuditVideoInfo(id, type) {
+            $.RdfCommon.get("Sys.VideoInfo", "AuditVideoInfo", { Type: type, Id: id }, function (msg) {
+                if (!msg.Success) {
+                    alert(msg.Error);
+                    return;
+                }
+                LoadUser();
+            });
+        }
+        function LoadUser() {
+            $.RdfCommon.get("Sys.VideoInfo", "LoadVideoInfo", entity, function (msg) {
+                if (!msg.Success) {
+                    alert(msg.Error);
+                    return;
+                }
+                $("#paginddiv").setPageCount(msg.Value);
+                var data = JSON.parse(msg.Result);
+                var tbody = $("#datatable tbody").empty();
+                var date = new Date();
+                for (var i = 0; i < data.length; i++) {
+                    var status = "";
+                    var str = "";
+                    if (data[i].DataStatus == 3) {
+                        status = "已禁用";
+                        str = "<a onclick='ResumeVideo(" + data[i].Id + ")'>恢复</a>";
+                    } else {
+                        if (data[i].PlayStatus == 1) {
+                            status = "直播中";
+                            str = "<a onclick='OpenVideo(" + data[i].Id + ")'>进入</a><a onclick='PauseVideo(" + data[i].Id + ")'>禁用</a>";
+                        }
+                        else if (data[i].PlayStatus == 2) {
+                            status = "已暂停";
+                            str = "<a onclick='PauseVideo(" + data[i].Id + ")'>禁用</a>";
+                        }
+                        else if (data[i].PlayStatus == 3) {
+                            status = "已结束";
+                        } else if (data[i].PlayStatus == 4) {
+                            status = "已失效";
+                        } else {
+                            status = "未开始";
+                            if (data[i].DataStatus == 0)
+                                str = "<a onclick='AuditVideoInfo(" + data[i].Id + ",1)'>审核</a><a onclick='AuditVideoInfo(" + data[i].Id + ",2)'>驳回</a>";
+                            else if (data[i].DataStatus == 1)
+                                str = "<a>已审核</a><a onclick='PauseVideo(" + data[i].Id + ")'>禁用</a>";
+                            else
+                                str = "<a>已驳回</a>";
+                        }
+                    }
+                    if (!data[i].VideoName && data[i].DataStatus == 1)
+                        data[i].VideoName = "设置点播";
+                    tbody.append("<tr>"
+                     + "<td width='4%'>" + data[i].Id + "</td>"
+                    + "<td width='14%'><div class='CoverPlan'><img src='" + data[i].Url + "?ts=" + date.getTime() + "'/></div></td>"
+                    + "<td width='20%'>" + data[i].Title + "<div class=\"div_video\" onclick='GetVideo(" + data[i].Id + ")'>" + data[i].VideoName + "</div>" + "</td>"
+                    + "<td width='18%'>" + data[i].BeginTime + "</td>"
+                    + "<td width='10%'>" + data[i].PlayLongTime + "</td>"
+                    + "<td width='10%'>" + data[i].UserName + "</td>"
+                    + "<td width='10%'>" + status + "</td>"
+                    + "<td width='14%'>" + str + "</td>"
+                        + "</tr>");
+                }
+            });
+        }
+        $(function () {
+            if (window.location.search) {
+                entity.userId = window.location.search.split('=')[1];
+            }
+            $("#paginddiv").paging({
+                pageCount: 1,
+                selected: function (index) {
+                    entity.pageIndex = index;
+                    LoadUser();
+                }
+            });
+            LoadUser();
+            $("#txtsearch").keydown(function (e) {
+                if (e.keyCode == 13) {
+                    entity.search = $(this).val();
+                    LoadUser();
+                }
+            });
+            $("#btnsearch").click(function () {
+                entity.search = $("#txtsearch").val();
+                LoadUser();
+            });
+        });
+    </script>
+    <style type="text/css">
+        .con_right_table {
+            width: 100%;
+            height: 700px;
+            box-sizing: border-box;
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 1px 0 0 rgba(189, 189, 189, 0.50);
+            border-radius: 9px;
+            padding: 0px 20px 20px;
+            margin-top: 13px;
+            position: relative;
+        }
+        .div_video {
+            color:#4A90E2;
+            text-decoration:underline;
+            cursor:pointer;
+        }
+        .con_table {
+            width: 100%;
+            height: 590px;
+        }
+
+        .con_right_table table {
+            width: 100%;
+            text-align: center;
+            border-collapse: collapse;
+        }
+
+            .con_right_table table tbody tr {
+                width: 100%;
+                height: 117px;
+                line-height: 57px;
+                border-bottom: 1px solid #C8C8C8;
+            }
+
+            .con_right_table table thead {
+                height: 66px;
+                font-size: 21px;
+                color: #333333;
+                letter-spacing: -0.84px;
+            }
+
+
+            .con_right_table table tr td {
+                font-size: 18px;
+                letter-spacing: -0.84px;
+            }
+
+                .con_right_table table tr td a {
+                    float: left;
+                    font-size: 21px;
+                    color: #4A90E2;
+                    letter-spacing: -0.84px;
+                    width: 50%;
+                    cursor: pointer;
+                }
+
+        .CoverPlan {
+            width: 100%;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+        }
+
+            .CoverPlan img {
+                width: 135px;
+                height: 79px;
+                margin: 0 auto;
+            }
+    </style>
+</head>
+<body>
+    <div class="con_right_infor">
+        <div class="search">
+            <div class="search_left">
+                <span>关键词：</span>
+                <input type="text" id="txtsearch" />
+                <a><img src="Images/search.png" id="btnsearch" /></a>
+            </div>
+        </div>
+
+        <div class="con_right_table">
+            <div class="con_table">
+                <table id="datatable">
+                    <thead>
+                        <tr>
+                            <th width="4%">ID</th>
+                            <th width="14%">封面图</th>
+                            <th width="20%">标题(直播,点播)</th>
+                            <th width="18%">直播开始时间</th>
+                            <th width="10%">时长(分钟)</th>
+                            <th width="10%">直播教练</th>
+                            <th width="10%">直播状态</th>
+                            <th width="14%">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div id="paginddiv"></div>
+        </div>
+    </div>
+</body>
+</html>
